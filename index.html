@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>48mmガチャポンFIT　V1.66</title>
+<title>48mmガチャポンFIT　V1.70</title>
 <style>
 :root{
   --bg:#e7ebf4; --panel:#ffffff; --ink:#172033; --muted:#667085;
@@ -441,7 +441,7 @@ body.submit-dialog-open #submitDialog{
       <button id="settingsBtn" class="light">設定変更</button>
     </div>
     <div class="titleBox">
-      <h1>48mmガチャポンFIT　V1.66</h1>
+      <h1>48mmガチャポンFIT　V1.70</h1>
       <div class="sub"></div>
     </div>
     <div class="rightTopGroup">
@@ -486,7 +486,7 @@ body.submit-dialog-open #submitDialog{
   <div id="submitDialog" role="dialog" aria-modal="true" aria-labelledby="submitDialogTitle">
     <h2 id="submitDialogTitle">提出用STL保存</h2>
     <div class="notice">
-      学年・クラス・番号・氏名から、提出用ファイル名を自動で作成します。氏名は空欄でも保存できます。
+      学年・クラス・番号・氏名から、提出用ファイル名を自動で作成します。
     </div>
     <div class="submitGrid">
       <div>
@@ -677,6 +677,7 @@ let hasAdjustedModel=false;
 let cumulativeScale=1;
 let scaleSliderTimer=null;
 let cancelEnlargeCheck=false;
+let lastFitStatus="unknown";
 let isApplyingAdjustment=false;
 let isJudgingSpin=false, spinStartTime=0, spinDuration=0, spinBaseRotation=null;
 
@@ -710,15 +711,22 @@ function updateSubmitPreview(){
   const preview=document.getElementById("submitFilePreview");
   if(preview) preview.textContent=`ファイル名：${makeSubmitFileName()}`;
 }
-function openSubmitDialog(){
+async function openSubmitDialog(){
   if(!objectData){
     setResult("ng","STLが未読込です","提出用STLを保存する前に、判定したいSTLを読み込んでください。");
     return;
   }
+
+  // 提出用STL保存を押した時点で、まず現在の判定状態を確認する。
+  // 入らない場合は、保存画面を出す前に自動で縮小して再判定する。
+  const ok = await ensureFitBeforeSubmit();
+  if(!ok) return;
+
   document.body.classList.add("submit-dialog-open");
   updateSubmitPreview();
   setTimeout(()=>document.getElementById("submitName")?.focus(), 50);
 }
+
 function closeSubmitDialog(){
   document.body.classList.remove("submit-dialog-open");
 }
@@ -749,6 +757,15 @@ function setResult(kind, main, sub){
   mainEl.textContent=main;
   mainEl.style.display = main ? "" : "none";
   document.getElementById("resultSub").textContent=sub || "";
+
+  if(kind==="ok" && String(main||"").includes("入ります")){
+    lastFitStatus="ok";
+  }else if(kind==="ng"){
+    lastFitStatus="ng";
+  }else if(kind==="judging"){
+    lastFitStatus="judging";
+  }
+
   const prompt=document.getElementById("scalePrompt");
   if(prompt) prompt.style.display="none";
   hideProgress();
@@ -1154,6 +1171,7 @@ function loadObjectBuffer(buffer,name){
   recommendedMode=null;
   adjustmentCount=0;
   hasAdjustedModel=false;
+  lastFitStatus="unknown";
   cumulativeScale=1;
   updateScaleUI();
   document.getElementById("downloadShrinkBtn").style.display="none";
@@ -1782,8 +1800,12 @@ function strictScaleForPose(pose, maxScale){
 function submitDownloadSTL(){
   if(!objectData) return;
 
-  // 今画面に表示されている倍率は、objectData.geom に反映済み。
-  // そのため scale=1 で現在状態をそのままSTL出力する。
+  if(lastFitStatus!=="ok"){
+    closeSubmitDialog();
+    openSubmitDialog();
+    return;
+  }
+
   const blob=makeCurrentSTLBlob(1);
   if(!blob) return;
 
@@ -1798,6 +1820,72 @@ function submitDownloadSTL(){
   setTimeout(()=>URL.revokeObjectURL(url),1000);
   closeSubmitDialog();
 }
+
+async function ensureFitBeforeSubmit(){
+  if(!objectData) return false;
+
+  // まだ判定されていない、または倍率変更後などで状態が不明な場合は、まず判定する。
+  if(lastFitStatus==="unknown" || lastFitStatus==="judging"){
+    setResult("judging","提出前に判定中…","提出できる大きさか確認しています。");
+    await sleep(80);
+    await judge();
+  }
+
+  if(lastFitStatus==="ok") return true;
+
+  // 入らない場合は、確認メッセージを出し、はいなら自動縮小を開始する。
+  const yes = window.confirm("STLはまだ大きすぎるので保存できません。自動で倍率を変更しますか？");
+  if(!yes) return false;
+
+  return await autoShrinkUntilFitsForSubmit();
+}
+
+async function autoShrinkUntilFitsForSubmit(){
+  if(!objectData) return false;
+
+  setResult("judging","自動で倍率を調整中…","提出できる大きさになるまで、STL倍率を変更しています。");
+  await sleep(80);
+
+  // まず直前の判定で求めた推奨倍率を使い、なければ段階的に縮小する。
+  // 1回でまだ大きい場合も、メッセージで止めずに自動で続ける。
+  const fallbackScales=[0.95,0.92,0.90,0.88,0.85,0.82,0.80,0.76,0.72,0.68,0.64,0.60];
+
+  for(let i=0;i<12;i++){
+    let scale = null;
+
+    if(recommendedScale && recommendedScale > 0 && recommendedScale < 1){
+      scale = recommendedScale * 0.985;
+    }else{
+      scale = fallbackScales[Math.min(i, fallbackScales.length-1)];
+    }
+
+    scale = Math.max(0.10, Math.min(0.98, scale));
+
+    applyScaleToObjectData(scale);
+    updateScaleUI();
+
+    setResult(
+      "judging",
+      "自動で倍率を調整中…",
+      `STL倍率を ${Math.round(cumulativeScale*1000)/10}% に変更して再判定しています。`
+    );
+
+    await sleep(120);
+    await judge();
+
+    if(lastFitStatus==="ok"){
+      setResult("ok","修正済みSTLは入ります","提出できる大きさに調整しました。保存情報を入力してください。");
+      return true;
+    }
+
+    // 次ループでは直前のrecommendedScaleが使える可能性がある
+    await sleep(80);
+  }
+
+  setResult("ng","自動調整できませんでした","STLの形状が大きすぎます。Tinkercadで小さくしてから、もう一度読み込んでください。");
+  return false;
+}
+
 
 async function judge(){
   if(!objectData || !containerData) return;
@@ -2118,7 +2206,7 @@ function boot(){
   document.getElementById("manualJudgeBtn").addEventListener("click", judge);
   document.getElementById("showPoseBtn").addEventListener("click", applyPose);
   document.getElementById("downloadShrinkBtn").addEventListener("click", downloadScaledSTL);
-  document.getElementById("submitSaveBtn").addEventListener("click", openSubmitDialog);
+  document.getElementById("submitSaveBtn").addEventListener("click", ()=>openSubmitDialog().catch(err=>{ console.error(err); setResult("ng","提出前の判定でエラーが起きました","もう一度STLを読み込んで試してください。"); }));
   document.getElementById("submitDialogBackdrop").addEventListener("click", closeSubmitDialog);
   document.getElementById("submitCancelBtn").addEventListener("click", closeSubmitDialog);
   document.getElementById("submitDownloadBtn").addEventListener("click", submitDownloadSTL);
