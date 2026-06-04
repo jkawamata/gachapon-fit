@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>48mmガチャポンFIT　V1.70</title>
+<title>48mmガチャポンFIT　V1.87</title>
 <style>
 :root{
   --bg:#e7ebf4; --panel:#ffffff; --ink:#172033; --muted:#667085;
@@ -149,9 +149,17 @@ body.dragging #dropOverlay{display:flex}
   display:block;
 }
 #resultSub{
-  margin-top:0; font-size:clamp(18px,2.2vw,30px); line-height:1.55; color:#334155;
+  white-space:pre-line;
+  margin:10px auto 0;
+  max-width:min(820px,86vw);
+  font-size:clamp(14px,1.55vw,21px);
   font-weight:700;
-  text-shadow:0 1px 0 rgba(255,255,255,.85);
+  line-height:1.6;
+  color:#334155;
+  text-align:center;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.9),
+    0 0 8px rgba(255,255,255,.8);
 }
 #resultOverlay.judging #resultSub,
 #resultOverlay.ok #resultSub,
@@ -172,18 +180,18 @@ body.dragging #dropOverlay{display:flex}
 }
 #scalePrompt{
   display:none;
-  margin-top:18px;
+  margin-top:8px;
   pointer-events:auto;
   text-align:center;
 }
 #scalePromptText{
-  font-size:clamp(16px,2vw,26px);
-  font-weight:900;
+  font-size:clamp(28px,4.2vw,54px);
+  font-weight:1000;
   color:#172033;
   text-shadow:
-    0 1px 0 rgba(255,255,255,.95),
-    0 0 10px rgba(255,255,255,.9);
-  margin-bottom:10px;
+    0 2px 0 rgba(255,255,255,.95),
+    0 0 12px rgba(255,255,255,.9);
+  margin-bottom:18px;
 }
 #scalePromptButtons{
   display:flex;
@@ -200,14 +208,42 @@ body.dragging #dropOverlay{display:flex}
   width:min(420px,70vw);
   text-align:center;
 }
+#progressSpinner{
+  width:42px;
+  height:42px;
+  margin:0 auto 12px;
+  border-radius:50%;
+  border:5px solid rgba(148,163,184,.28);
+  border-top-color:#2563eb;
+  animation:spinWorking 0.9s linear infinite;
+}
+@keyframes spinWorking{
+  to{ transform:rotate(360deg); }
+}
 #progressBarOuter{
-  display:none;
+  width:min(280px,54vw);
+  height:9px;
+  margin:8px auto 0;
+  border-radius:999px;
+  overflow:hidden;
+  background:rgba(255,255,255,.65);
+  border:1px solid rgba(148,163,184,.35);
+  box-shadow:0 2px 8px rgba(15,23,42,.10);
 }
 #progressBarInner{
-  display:none;
+  width:36%;
+  height:100%;
+  border-radius:999px;
+  background:#2563eb;
+  animation:slideWorking 1.15s ease-in-out infinite;
+}
+@keyframes slideWorking{
+  0%{ transform:translateX(-110%); }
+  50%{ transform:translateX(90%); }
+  100%{ transform:translateX(260%); }
 }
 #progressText{
-  margin-top:0;
+  margin-top:10px;
   font-size:clamp(14px,1.7vw,21px);
   font-weight:800;
   color:#334155;
@@ -326,6 +362,51 @@ td:first-child{text-align:left;color:#334155}
   position:absolute; inset:0; z-index:39; display:none; background:rgba(15,23,42,.18);
 }
 body.settings-open #settingsBackdrop{display:block}
+#centerConfirmBackdrop{
+  position:absolute;
+  inset:0;
+  z-index:80;
+  display:none;
+  background:rgba(15,23,42,.25);
+}
+body.center-confirm-open #centerConfirmBackdrop{
+  display:block;
+}
+#centerConfirmDialog{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  z-index:81;
+  width:min(560px,92vw);
+  display:none;
+  background:rgba(255,255,255,.98);
+  border:1px solid rgba(148,163,184,.45);
+  border-radius:20px;
+  padding:24px;
+  box-shadow:0 18px 46px rgba(15,23,42,.28);
+  text-align:center;
+}
+body.center-confirm-open #centerConfirmDialog{
+  display:block;
+}
+#centerConfirmText{
+  font-size:24px;
+  font-weight:800;
+  line-height:1.55;
+  color:#1f2937;
+}
+.centerConfirmButtons{
+  margin-top:22px;
+  display:flex;
+  justify-content:center;
+  gap:14px;
+}
+.centerConfirmButtons button{
+  min-width:110px;
+  font-size:20px;
+  padding:13px 20px;
+}
 #submitDialogBackdrop{
   position:absolute;
   inset:0;
@@ -441,7 +522,7 @@ body.submit-dialog-open #submitDialog{
       <button id="settingsBtn" class="light">設定変更</button>
     </div>
     <div class="titleBox">
-      <h1>48mmガチャポンFIT　V1.70</h1>
+      <h1>48mmガチャポンFIT　V1.87</h1>
       <div class="sub"></div>
     </div>
     <div class="rightTopGroup">
@@ -458,8 +539,9 @@ body.submit-dialog-open #submitDialog{
     <div id="resultMain"></div>
     <div id="resultSub">判定したいSTLファイルを、画面上にドラッグ＆ドロップしてください。</div>
     <div id="progressBox">
-      <div id="progressBarOuter"><div id="progressBarInner"></div></div>
+      <div id="progressSpinner" aria-hidden="true"></div>
       <div id="progressText">確認中...</div>
+      <div id="progressBarOuter"><div id="progressBarInner"></div></div>
       <button id="cancelCheckBtn">判定をキャンセル</button>
     </div>
     <div id="scalePrompt">
@@ -481,6 +563,15 @@ body.submit-dialog-open #submitDialog{
   </div>
 
   <div id="hud">マウスでガチャ玉の回転・拡大縮小ができます</div>
+
+  <div id="centerConfirmBackdrop"></div>
+  <div id="centerConfirmDialog" role="dialog" aria-modal="true">
+    <div id="centerConfirmText">確認</div>
+    <div class="centerConfirmButtons">
+      <button id="centerConfirmYesBtn">はい</button>
+      <button id="centerConfirmNoBtn" class="light">いいえ</button>
+    </div>
+  </div>
 
   <div id="submitDialogBackdrop"></div>
   <div id="submitDialog" role="dialog" aria-modal="true" aria-labelledby="submitDialogTitle">
@@ -530,7 +621,7 @@ body.submit-dialog-open #submitDialog{
     </div>
 
     <div class="card">
-      <h2>表示中STLの倍率</h2>
+      <h2>表示中STL倍率</h2>
       <div class="scaleReadout">
         <span>最初に読み込んだSTLに対する倍率</span>
         <strong id="scaleValue">100%</strong>
@@ -678,6 +769,9 @@ let cumulativeScale=1;
 let scaleSliderTimer=null;
 let cancelEnlargeCheck=false;
 let lastFitStatus="unknown";
+let suppressEnlargePrompt=false;
+let enlargeCheckCanceledAsFinished=false;
+let fitConfirmedForSubmit=false;
 let isApplyingAdjustment=false;
 let isJudgingSpin=false, spinStartTime=0, spinDuration=0, spinBaseRotation=null;
 
@@ -718,15 +812,49 @@ async function openSubmitDialog(){
   }
 
   // 提出用STL保存を押した時点で、まず現在の判定状態を確認する。
-  // 入らない場合は、保存画面を出す前に自動で縮小して再判定する。
-  const ok = await ensureFitBeforeSubmit();
-  if(!ok) return;
+  // 入らない場合は自動で縮小するが、その場で保存画面には進まない。
+  const result = await ensureFitBeforeSubmit();
+
+  if(result === "adjusted"){
+    setResult(
+      "ok",
+      "修正済みSTLは入ります",
+      "STL倍率を自動で調整しました。\n内容を確認してから、もう一度「提出用STL保存」を押してください。"
+    );
+    return;
+  }
+
+  if(result !== true) return;
 
   document.body.classList.add("submit-dialog-open");
   updateSubmitPreview();
   setTimeout(()=>document.getElementById("submitName")?.focus(), 50);
 }
 
+function showCenterConfirm(message){
+  return new Promise((resolve)=>{
+    const text=document.getElementById("centerConfirmText");
+    const yes=document.getElementById("centerConfirmYesBtn");
+    const no=document.getElementById("centerConfirmNoBtn");
+    const backdrop=document.getElementById("centerConfirmBackdrop");
+    if(text) text.textContent=message;
+
+    function cleanup(result){
+      document.body.classList.remove("center-confirm-open");
+      yes?.removeEventListener("click", onYes);
+      no?.removeEventListener("click", onNo);
+      backdrop?.removeEventListener("click", onNo);
+      resolve(result);
+    }
+    function onYes(){ cleanup(true); }
+    function onNo(){ cleanup(false); }
+
+    yes?.addEventListener("click", onYes);
+    no?.addEventListener("click", onNo);
+    backdrop?.addEventListener("click", onNo);
+    document.body.classList.add("center-confirm-open");
+  });
+}
 function closeSubmitDialog(){
   document.body.classList.remove("submit-dialog-open");
 }
@@ -756,14 +884,17 @@ function setResult(kind, main, sub){
   const mainEl=document.getElementById("resultMain");
   mainEl.textContent=main;
   mainEl.style.display = main ? "" : "none";
-  document.getElementById("resultSub").textContent=sub || "";
+  document.getElementById("resultSub").innerHTML=String(sub || "").replace(/\\n/g,"<br>").replace(/\n/g,"<br>");
 
   if(kind==="ok" && String(main||"").includes("入ります")){
     lastFitStatus="ok";
+    fitConfirmedForSubmit=true;
   }else if(kind==="ng"){
     lastFitStatus="ng";
+    fitConfirmedForSubmit=false;
   }else if(kind==="judging"){
     lastFitStatus="judging";
+    // 追加の拡大確認中などでは、すでに入ることが確認済みならその情報は残す。
   }
 
   const prompt=document.getElementById("scalePrompt");
@@ -771,6 +902,7 @@ function setResult(kind, main, sub){
   hideProgress();
 }
 function showScalePrompt(text){
+  hideProgress();
   const prompt=document.getElementById("scalePrompt");
   const textEl=document.getElementById("scalePromptText");
   if(textEl && text) textEl.textContent=text;
@@ -1172,6 +1304,8 @@ function loadObjectBuffer(buffer,name){
   adjustmentCount=0;
   hasAdjustedModel=false;
   lastFitStatus="unknown";
+  enlargeCheckCanceledAsFinished=false;
+  fitConfirmedForSubmit=false;
   cumulativeScale=1;
   updateScaleUI();
   document.getElementById("downloadShrinkBtn").style.display="none";
@@ -1484,7 +1618,7 @@ async function findBestEnlargePose(points, maxScale, timeBudgetMs=800, progressC
             await sleep(0);
             if(cancelCallback && cancelCallback()) return best;
             if(performance.now() - startTime > timeBudgetMs){
-              if(progressCallback) progressCallback("最終確認中…", 100);
+              
               return best;
             }
           }
@@ -1494,7 +1628,7 @@ async function findBestEnlargePose(points, maxScale, timeBudgetMs=800, progressC
       }
     }
   }
-  if(progressCallback) progressCallback("最終確認中…", 100);
+  
   return best;
 }
 
@@ -1800,6 +1934,22 @@ function strictScaleForPose(pose, maxScale){
 function submitDownloadSTL(){
   if(!objectData) return;
 
+  if(enlargeCheckCanceledAsFinished || fitConfirmedForSubmit){
+    if(currentVisibleSTLFits()){
+      lastFitStatus="ok";
+    }else{
+      closeSubmitDialog();
+      showActuallyNotFitMessage();
+      return;
+    }
+  }
+
+  if(lastFitStatus==="judging"){
+    closeSubmitDialog();
+    setResult("judging","判定が終わってから保存してください。","現在、STLが入るかどうかを確認しています。判定結果が表示されてから保存してください。");
+    return;
+  }
+
   if(lastFitStatus!=="ok"){
     closeSubmitDialog();
     openSubmitDialog();
@@ -1821,20 +1971,79 @@ function submitDownloadSTL(){
   closeSubmitDialog();
 }
 
+function currentVisibleSTLFits(){
+  if(!objectData || !objectData.vertices || !objectData.vertices.length) return false;
+
+  // まず現在採用されている姿勢を使う。なければ無回転で確認する。
+  let pose = null;
+  if(typeof currentPose !== "undefined" && currentPose && typeof currentPose.rx !== "undefined"){
+    pose = currentPose;
+  }else if(typeof bestPose !== "undefined" && bestPose && typeof bestPose.rx !== "undefined"){
+    pose = bestPose;
+  }else if(typeof recommendedPose !== "undefined" && recommendedPose && typeof recommendedPose.rx !== "undefined"){
+    pose = recommendedPose;
+  }
+
+  const sample = samplePoints(objectData.vertices, Math.min(900, objectData.vertices.length));
+
+  if(pose){
+    const mat = matrixFromAngles(pose.rx || 0, pose.ry || 0, pose.rz || 0);
+    const t = pose.t || new THREE.Vector3(0,0,0);
+    return poseOverflowScaled(sample, mat, t, 1) <= 1e-7;
+  }
+
+  const mat = matrixFromAngles(0,0,0);
+  const t = new THREE.Vector3(0,0,0);
+  return poseOverflowScaled(sample, mat, t, 1) <= 1e-7;
+}
+
+function showActuallyNotFitMessage(){
+  lastFitStatus="ng";
+  fitConfirmedForSubmit=false;
+  setResult(
+    "ng",
+    "まだ入りません",
+    "現在のSTLはガチャ玉の内径を超えています。\\n画面下のスライダーでSTL倍率を下げてください。\\n再度判定します。"
+  );
+}
+
 async function ensureFitBeforeSubmit(){
   if(!objectData) return false;
 
-  // まだ判定されていない、または倍率変更後などで状態が不明な場合は、まず判定する。
-  if(lastFitStatus==="unknown" || lastFitStatus==="judging"){
+  // 自動拡大の確認をキャンセルした場合、または「入る」ことが確認済みで
+  // 追加の拡大確認中の場合は、提出前判定は完了済みとみなす。
+  if(enlargeCheckCanceledAsFinished || fitConfirmedForSubmit){
+    if(currentVisibleSTLFits()){
+      lastFitStatus="ok";
+      return true;
+    }else{
+      showActuallyNotFitMessage();
+      return false;
+    }
+  }
+
+  // 本当に入るかどうかの判定中だけ、保存を待ってもらう。
+  if(lastFitStatus==="judging"){
+    setResult("judging","判定が終わってから保存してください。","現在、STLが入るかどうかを確認しています。判定結果が表示されてから保存してください。");
+    return false;
+  }
+
+  // まだ判定されていない、または状態が不明な場合だけ、提出前に判定する。
+  if(lastFitStatus==="unknown"){
     setResult("judging","提出前に判定中…","提出できる大きさか確認しています。");
     await sleep(80);
-    await judge();
+    suppressEnlargePrompt=true;
+    try{
+      await judge();
+    }finally{
+      suppressEnlargePrompt=false;
+    }
   }
 
   if(lastFitStatus==="ok") return true;
 
   // 入らない場合は、確認メッセージを出し、はいなら自動縮小を開始する。
-  const yes = window.confirm("STLはまだ大きすぎるので保存できません。自動で倍率を変更しますか？");
+  const yes = await showCenterConfirm("STLはまだ大きすぎるので保存できません。自動で倍率を変更しますか？");
   if(!yes) return false;
 
   return await autoShrinkUntilFitsForSubmit();
@@ -1871,11 +2080,16 @@ async function autoShrinkUntilFitsForSubmit(){
     );
 
     await sleep(120);
-    await judge();
+    suppressEnlargePrompt=true;
+    try{
+      await judge();
+    }finally{
+      suppressEnlargePrompt=false;
+    }
 
     if(lastFitStatus==="ok"){
-      setResult("ok","修正済みSTLは入ります","提出できる大きさに調整しました。保存情報を入力してください。");
-      return true;
+      setResult("ok","修正済みSTLは入ります","STL倍率を自動で調整しました。\n内容を確認してから、もう一度「提出用STL保存」を押してください。");
+      return "adjusted";
     }
 
     // 次ループでは直前のrecommendedScaleが使える可能性がある
@@ -1979,10 +2193,10 @@ async function judge(){
             if(rest>0) await sleep(rest);
             stopSpin();
             if(hasAdjustedModel){
-              setResult("ok","修正済みSTLは入ります","拡大・縮小後のSTLが、ガチャ玉の内径内に収まりました。");
+              setResult("ok","修正済みSTLは入ります","拡大・縮小後のSTLが、ガチャ玉の内径内に収まりました。\n再度調整する場合は、画面下のスライダーでSTL倍率を変えてください。\n再度判定します。");
               setPill("posePill","判定：修正済みSTLは入ります");
             }else{
-              setResult("ok","入ります","ガチャ玉の内径内に収まりました。");
+              setResult("ok","入ります","ガチャ玉の内径内に収まりました。\n再度調整する場合は、画面下のスライダーでSTL倍率を変えてください。\n再度判定します。");
               setPill("posePill","判定：入ります");
             }
             document.getElementById("rotInfo").textContent=`X ${bestPose.rx}° / Y ${bestPose.ry}° / Z ${bestPose.rz}°`;
@@ -2003,9 +2217,11 @@ async function judge(){
             // 「入ります」とだけ表示して待たせず、拡大候補の確認中であることをすぐ表示する。
             const enlargeMax=Number(document.getElementById("autoEnlarge")?.value || 0) / 100;
             const enlargeBudget=Number(document.getElementById("enlargeTimeLimit")?.value || 0);
-            if(enlargeMax > 1 && enlargeBudget > 0){
+            if(!suppressEnlargePrompt && enlargeMax > 1 && enlargeBudget > 0){
+              fitConfirmedForSubmit=true;
               cancelEnlargeCheck=false;
-              setResult("judging","拡大できるか確認中…","ガチャ玉に入る範囲で、もう少し大きくできるか確認しています。");
+              enlargeCheckCanceledAsFinished=false;
+              setResult("judging","","");
               showProgress("拡大候補を確認中…", 10, true);
               setPill("posePill","判定：入ります（拡大候補を計算中）");
               await sleep(0);
@@ -2024,17 +2240,23 @@ async function judge(){
                 recommendedScale=null;
                 recommendedPose=null;
                 recommendedMode=null;
-                if(hasAdjustedModel){
-                  setResult("ok","修正済みSTLは入ります","拡大・縮小後のSTLが、ガチャ玉の内径内に収まりました。");
-                  setPill("posePill","判定：修正済みSTLは入ります");
+                enlargeCheckCanceledAsFinished=true;
+
+                if(currentVisibleSTLFits()){
+                  fitConfirmedForSubmit=true;
+                  lastFitStatus="ok";
+                  if(hasAdjustedModel){
+                    setResult("ok","修正済みSTLは入ります","再度調整する場合は、画面下のスライダーでSTL倍率を変えてください。\n再度判定します。");
+                    setPill("posePill","判定：修正済みSTLは入ります");
+                  }else{
+                    setResult("ok","入ります","再度調整する場合は、画面下のスライダーでSTL倍率を変えてください。\n再度判定します。");
+                    setPill("posePill","判定：入ります");
+                  }
                 }else{
-                  setResult("ok","入ります","ガチャ玉の内径内に収まりました。");
-                  setPill("posePill","判定：入ります");
+                  showActuallyNotFitMessage();
                 }
               }else if(bestEnlarge && bestEnlarge.scale > 1.05){
                 const proposedPose={rx:bestEnlarge.rx, ry:bestEnlarge.ry, rz:bestEnlarge.rz, t:bestEnlarge.t.clone()};
-                showProgress("最終確認中…", 100, false);
-                await sleep(0);
                 const strictScale=strictScaleForPose(proposedPose, bestEnlarge.scale);
                 if(!strictScale || strictScale <= 1.05){
                   log("拡大候補は最終確認で除外されました。");
@@ -2058,10 +2280,10 @@ async function judge(){
               }
               if(!recommendedScale){
                 if(hasAdjustedModel){
-                  setResult("ok","修正済みSTLは入ります","拡大・縮小後のSTLが、ガチャ玉の内径内に収まりました。");
+                  setResult("ok","修正済みSTLは入ります","拡大・縮小後のSTLが、ガチャ玉の内径内に収まりました。\n再度調整する場合は、画面下のスライダーでSTL倍率を変えてください。\n再度判定します。");
                   setPill("posePill","判定：修正済みSTLは入ります");
                 }else{
-                  setResult("ok","入ります","ガチャ玉の内径内に収まりました。");
+                  setResult("ok","入ります","ガチャ玉の内径内に収まりました。\n再度調整する場合は、画面下のスライダーでSTL倍率を変えてください。\n再度判定します。");
                   setPill("posePill","判定：入ります");
                 }
               }
@@ -2144,6 +2366,9 @@ async function judge(){
 
 async function applyScaleFromSlider(){
   if(!objectData || !objectData.geom) return;
+  enlargeCheckCanceledAsFinished=false;
+  lastFitStatus="unknown";
+  fitConfirmedForSubmit=false;
   const slider=document.getElementById("scaleSlider");
   if(!slider) return;
 
@@ -2217,6 +2442,14 @@ function boot(){
     e.preventDefault();
     e.stopPropagation();
     cancelEnlargeCheck=true;
+    enlargeCheckCanceledAsFinished=true;
+    if(currentVisibleSTLFits()){
+      lastFitStatus="ok";
+      fitConfirmedForSubmit=true;
+    }else{
+      lastFitStatus="ng";
+      fitConfirmedForSubmit=false;
+    }
     showProgress("キャンセル中…", 100, false);
   });
   document.getElementById("scaleYesBtn").addEventListener("click", (e)=>{
@@ -2227,7 +2460,22 @@ function boot(){
   document.getElementById("scaleNoBtn").addEventListener("click", (e)=>{
     e.preventDefault();
     e.stopPropagation();
-    hideResultMessage();
+    recommendedScale=null;
+    recommendedPose=null;
+    recommendedMode=null;
+    enlargeCheckCanceledAsFinished=true;
+
+    if(currentVisibleSTLFits()){
+      fitConfirmedForSubmit=true;
+      lastFitStatus="ok";
+      setResult(
+        "ok",
+        "入ります",
+        "再度調整する場合は、画面下のスライダーでSTL倍率を変えてください。\n再度判定します。"
+      );
+    }else{
+      showActuallyNotFitMessage();
+    }
   });
   document.getElementById("resetView").addEventListener("click", resetView);
 
