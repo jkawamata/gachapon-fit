@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>48mmガチャポンFIT　V1.87</title>
+<title>48mmガチャポンFIT　V1.92</title>
 <style>
 :root{
   --bg:#e7ebf4; --panel:#ffffff; --ink:#172033; --muted:#667085;
@@ -522,7 +522,7 @@ body.submit-dialog-open #submitDialog{
       <button id="settingsBtn" class="light">設定変更</button>
     </div>
     <div class="titleBox">
-      <h1>48mmガチャポンFIT　V1.87</h1>
+      <h1>48mmガチャポンFIT　V1.92</h1>
       <div class="sub"></div>
     </div>
     <div class="rightTopGroup">
@@ -1087,6 +1087,156 @@ function getUniqueVertices(geom){
   }
   return out;
 }
+
+
+function analyzeSTLConnectedComponents(geom){
+  const pos = geom?.attributes?.position?.array;
+  if(!pos || pos.length < 9){
+    return {componentCount:0, significantCount:0, printIslandCount:0, components:[], printIslands:[], largestRatio:1, warning:false};
+  }
+
+  const triCount = Math.floor(pos.length / 9);
+  const vertexToTriangles = new Map();
+
+  // STLは同じ座標でも別頂点として入ることがあるため、座標を丸めて共有頂点として扱う。
+  const q = 100; // 0.01mm単位
+  function keyAt(i){
+    const x = Math.round(pos[i] * q);
+    const y = Math.round(pos[i+1] * q);
+    const z = Math.round(pos[i+2] * q);
+    return `${x},${y},${z}`;
+  }
+
+  for(let tri=0; tri<triCount; tri++){
+    const base = tri * 9;
+    for(const key of [keyAt(base), keyAt(base+3), keyAt(base+6)]){
+      if(!vertexToTriangles.has(key)) vertexToTriangles.set(key, []);
+      vertexToTriangles.get(key).push(tri);
+    }
+  }
+
+  const visited = new Uint8Array(triCount);
+  const components = [];
+
+  for(let startTri=0; startTri<triCount; startTri++){
+    if(visited[startTri]) continue;
+
+    const stack = [startTri];
+    visited[startTri] = 1;
+    let count = 0;
+    const bbox = new THREE.Box3();
+    const tmp = new THREE.Vector3();
+
+    while(stack.length){
+      const tri = stack.pop();
+      count++;
+      const base = tri * 9;
+
+      for(const off of [0,3,6]){
+        tmp.set(pos[base+off], pos[base+off+1], pos[base+off+2]);
+        bbox.expandByPoint(tmp);
+      }
+
+      for(const key of [keyAt(base), keyAt(base+3), keyAt(base+6)]){
+        const neighbors = vertexToTriangles.get(key) || [];
+        for(const nb of neighbors){
+          if(!visited[nb]){
+            visited[nb] = 1;
+            stack.push(nb);
+          }
+        }
+      }
+    }
+
+    const size = new THREE.Vector3();
+    bbox.getSize(size);
+    components.push({triangles:count, bbox, size});
+  }
+
+  components.sort((a,b)=>b.triangles-a.triangles);
+  const largest = components[0]?.triangles || 0;
+  const largestRatio = triCount ? largest / triCount : 1;
+
+  // 小さなゴミ三角形まで警告しないため、一定以上のかたまりだけを見る。
+  const significant = components.filter(c => c.triangles >= Math.max(20, triCount * 0.01));
+
+  // ここからは「STL上のメッシュ分離」ではなく、
+  // 「3Dプリント時に別々になりそうな島」を推定する。
+  const n = significant.length;
+  const parent = Array.from({length:n}, (_,i)=>i);
+
+  function find(a){
+    while(parent[a] !== a){
+      parent[a] = parent[parent[a]];
+      a = parent[a];
+    }
+    return a;
+  }
+
+  function unite(a,b){
+    const ra = find(a);
+    const rb = find(b);
+    if(ra !== rb) parent[rb] = ra;
+  }
+
+  function boxesTouchOrOverlap(a,b,tol){
+    return !(
+      a.bbox.max.x + tol < b.bbox.min.x ||
+      a.bbox.min.x - tol > b.bbox.max.x ||
+      a.bbox.max.y + tol < b.bbox.min.y ||
+      a.bbox.min.y - tol > b.bbox.max.y ||
+      a.bbox.max.z + tol < b.bbox.min.z ||
+      a.bbox.min.z - tol > b.bbox.max.z
+    );
+  }
+
+  // 部品同士がこの程度の距離で接している／重なっているなら、
+  // スライサーでは一体化する可能性が高いものとして同じ島にする。
+  const contactTol = 0.15; // mm
+
+  for(let i=0;i<n;i++){
+    for(let j=i+1;j<n;j++){
+      if(boxesTouchOrOverlap(significant[i], significant[j], contactTol)){
+        unite(i,j);
+      }
+    }
+  }
+
+  const islandMap = new Map();
+  for(let i=0;i<n;i++){
+    const r = find(i);
+    if(!islandMap.has(r)){
+      islandMap.set(r, {components:0, triangles:0, bbox:new THREE.Box3()});
+    }
+    const island = islandMap.get(r);
+    island.components++;
+    island.triangles += significant[i].triangles;
+    island.bbox.union(significant[i].bbox);
+  }
+
+  const printIslands = Array.from(islandMap.values()).sort((a,b)=>b.triangles-a.triangles);
+  const printIslandCount = printIslands.length;
+
+  return {
+    componentCount:components.length,
+    significantCount:significant.length,
+    printIslandCount,
+    components,
+    printIslands,
+    largestRatio,
+    // 警告はメッシュ数ではなく、印刷時に分かれそうな島の数で判断する。
+    warning: printIslandCount >= 2
+  };
+}
+
+
+function componentWarningText(info){
+  if(!info || !info.warning) return "";
+  const count = info.printIslandCount || info.significantCount || 2;
+  return `このSTLは、3Dプリント時に${count}個に分かれてしまう可能性があります。\n部品同士が離れていないか確認してください。\n分かれている場合は、部品同士を接触・結合してから、もう一度STLを書き出してください。`;
+}
+
+
 function radiusAtYForGeom(verts, y){
   let best = 0;
   let nearest = Infinity;
@@ -1260,7 +1410,12 @@ function readObjectFile(f){
   const reader=new FileReader();
   reader.onload=e=>{
     loadObjectBuffer(e.target.result,f.name);
-    setTimeout(()=>judge(), 60);
+    setTimeout(()=>{
+      if(objectData?.componentInfo?.warning){
+        return;
+      }
+      judge();
+    }, 60);
   };
   reader.readAsArrayBuffer(f);
 }
@@ -1283,7 +1438,8 @@ function loadObjectBuffer(buffer,name){
   geom.boundingBox.getSize(size);
   const vertices=getUniqueVertices(geom);
 
-  objectData={name, geom, vertices, bbox:geom.boundingBox.clone(), size};
+  const componentInfo = analyzeSTLConnectedComponents(geom);
+  objectData={name, geom, vertices, bbox:geom.boundingBox.clone(), size, componentInfo};
   if(objectMesh) scene.remove(objectMesh);
   objectMesh=new THREE.Mesh(geom, new THREE.MeshPhongMaterial({color:0xfacc15, shininess:40}));
   objectMesh.scale.setScalar(1);
@@ -1311,8 +1467,23 @@ function loadObjectBuffer(buffer,name){
   document.getElementById("downloadShrinkBtn").style.display="none";
   if(document.getElementById("scaleInfo")) document.getElementById("scaleInfo").textContent="-";
   setPill("posePill","判定：準備中");
-  setResult("judging","読み込み完了","自動で判定を開始します。");
+  if(componentInfo.warning){
+    lastFitStatus="ng";
+    fitConfirmedForSubmit=false;
+    if(objectMesh?.material){
+      objectMesh.material.color.set(0xff3333);
+      objectMesh.material.opacity = 0.62;
+      objectMesh.material.transparent = true;
+      objectMesh.material.needsUpdate = true;
+    }
+    setPill("posePill","判定：STL分離の可能性");
+    setResult("ng","STLが分かれる可能性があります", componentWarningText(componentInfo));
+  }else{
+    setResult("judging","読み込み完了","自動で判定を開始します。");
+  }
+
   clearLog(`作品STL読込：${name}\n寸法：${fmt(size.x)} × ${fmt(size.y)} × ${fmt(size.z)} mm\n頂点数：${vertices.length}
+メッシュ成分：${componentInfo.significantCount}個 / 印刷時の分離候補：${componentInfo.printIslandCount}個
 上方向補正：${(document.getElementById("objectUpAxis")?.value || "z")==="z" ? "Z軸上→Y軸上に変換" : "補正なし"}`);
 }
 function setupDrop(){
@@ -1934,6 +2105,12 @@ function strictScaleForPose(pose, maxScale){
 function submitDownloadSTL(){
   if(!objectData) return;
 
+  if(objectData.componentInfo?.warning){
+    closeSubmitDialog();
+    setResult("ng","STLが分かれる可能性があります", componentWarningText(objectData.componentInfo));
+    return;
+  }
+
   if(enlargeCheckCanceledAsFinished || fitConfirmedForSubmit){
     if(currentVisibleSTLFits()){
       lastFitStatus="ok";
@@ -2009,6 +2186,11 @@ function showActuallyNotFitMessage(){
 
 async function ensureFitBeforeSubmit(){
   if(!objectData) return false;
+
+  if(objectData.componentInfo?.warning){
+    setResult("ng","STLが分かれる可能性があります", componentWarningText(objectData.componentInfo));
+    return false;
+  }
 
   // 自動拡大の確認をキャンセルした場合、または「入る」ことが確認済みで
   // 追加の拡大確認中の場合は、提出前判定は完了済みとみなす。
@@ -2103,6 +2285,14 @@ async function autoShrinkUntilFitsForSubmit(){
 
 async function judge(){
   if(!objectData || !containerData) return;
+
+  if(objectData.componentInfo?.warning){
+    lastFitStatus="ng";
+    fitConfirmedForSubmit=false;
+    setPill("posePill","判定：STL分離の可能性");
+    setResult("ng","STLが分かれる可能性があります", componentWarningText(objectData.componentInfo));
+    return;
+  }
   buildRadiusProfile();
 
   let angleStep=Number(document.getElementById("angleStep").value);
@@ -2366,6 +2556,11 @@ async function judge(){
 
 async function applyScaleFromSlider(){
   if(!objectData || !objectData.geom) return;
+
+  if(objectData.componentInfo?.warning){
+    setResult("ng","STLが分かれる可能性があります", componentWarningText(objectData.componentInfo));
+    return;
+  }
   enlargeCheckCanceledAsFinished=false;
   lastFitStatus="unknown";
   fitConfirmedForSubmit=false;
