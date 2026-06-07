@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>48mmガチャポンFIT　V1.92</title>
+<title>48mmガチャポンFIT　V2.38</title>
 <style>
 :root{
   --bg:#e7ebf4; --panel:#ffffff; --ink:#172033; --muted:#667085;
@@ -509,6 +509,667 @@ body.submit-dialog-open #submitDialog{
   .fileButtons{flex-direction:column; align-items:flex-end}
   #resultOverlay{padding:22px 18px}
 }
+
+/* 右側フローチャート：3D表示領域には干渉しない後付けUI */
+#flowPanel{
+  position:absolute;
+  right:14px;
+  top:78px;
+  z-index:30;
+  width:230px;
+  padding:14px 12px;
+  border-radius:18px;
+  background:rgba(255,255,255,.88);
+  border:1px solid rgba(148,163,184,.38);
+  box-shadow:0 8px 24px rgba(15,23,42,.14);
+  backdrop-filter:blur(8px);
+  pointer-events:auto;
+}
+#flowPanel h2{
+  margin:0 0 10px;
+  font-size:15px;
+  text-align:center;
+  color:#334155;
+  letter-spacing:.03em;
+}
+.flowStep{
+  width:100%;
+  border-radius:16px;
+  padding:10px 8px;
+  font-size:14px;
+  line-height:1.35;
+  font-weight:900;
+  color:#334155;
+  background:rgba(255,255,255,.96);
+  border:2px solid rgba(203,213,225,.9);
+  box-shadow:0 3px 10px rgba(15,23,42,.08);
+}
+.flowStep.flowReady{
+  color:#0f172a;
+  background:#fef3c7;
+  border-color:#f59e0b;
+  box-shadow:
+    0 0 0 4px rgba(245,158,11,.16),
+    0 0 18px rgba(245,158,11,.34),
+    0 4px 14px rgba(15,23,42,.16);
+  animation:flowPulse 1.15s ease-in-out infinite alternate;
+}
+.flowStep.flowDone{
+  color:#065f46;
+  background:#dcfce7;
+  border-color:#22c55e;
+}
+.flowStep.flowCurrent{
+  color:#1d4ed8;
+  background:#dbeafe;
+  border-color:#3b82f6;
+}
+.flowStep:disabled{
+  opacity:.42;
+  cursor:not-allowed;
+  background:#f1f5f9;
+  color:#64748b;
+  border-color:#cbd5e1;
+  box-shadow:none;
+  animation:none;
+}
+.flowArrow{
+  text-align:center;
+  color:#64748b;
+  font-weight:900;
+  font-size:22px;
+  line-height:1;
+  margin:5px 0;
+}
+@keyframes flowPulse{
+  from{ transform:translateY(0); }
+  to{ transform:translateY(-1px); }
+}
+@media(max-width:900px){
+  #flowPanel{
+    right:8px;
+    top:72px;
+    width:190px;
+    padding:10px 8px;
+  }
+  .flowStep{font-size:12px;padding:8px 6px}
+}
+@media(max-width:700px){
+  #flowPanel{display:none}
+}
+
+
+/* 右上のファイル操作ボタンは、フロー側に統合したため非表示 */
+#submitSaveBtn,
+#fileBtn{
+  display:none !important;
+}
+
+
+/* 積層方向判定画面 */
+#layerScreen{
+  position:absolute;
+  inset:0;
+  z-index:90;
+  display:none;
+  background:rgba(238,242,247,.96);
+  color:#172033;
+}
+body.layer-screen-open #layerScreen{
+  display:block;
+}
+#layerHeader{
+  position:absolute;
+  left:10px;
+  right:10px;
+  top:8px;
+  z-index:3;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  pointer-events:none;
+}
+#layerHeader > *{pointer-events:auto}
+#layerTitle{
+  font-size:21px;
+  font-weight:900;
+  color:#334155;
+  text-shadow:0 1px 0 rgba(255,255,255,.9);
+}
+#layerGuide{
+  font-size:14px;
+  color:#475569;
+  font-weight:700;
+}
+#layerButtons{
+  display:flex;
+  gap:10px;
+}
+#layerGrid{
+  position:absolute;
+  left:4px;
+  right:4px;
+  top:60px;
+  bottom:4px;
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  grid-template-rows:repeat(2, 1fr);
+  gap:6px;
+}
+.layerCard{
+  position:relative;
+  overflow:hidden;
+  border-radius:18px;
+  background:rgba(255,255,255,.88);
+  border:2px solid rgba(203,213,225,.85);
+  box-shadow:0 6px 18px rgba(15,23,42,.10);
+}
+.layerCard.selected{
+  border-color:rgba(203,213,225,.85);
+  box-shadow:0 6px 18px rgba(15,23,42,.10);
+}
+.layerCanvasWrap{
+  position:absolute;
+  inset:0;
+}
+.layerLabel{
+  position:absolute;
+  left:10px;
+  top:8px;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:6px 9px;
+  border-radius:999px;
+  background:rgba(255,255,255,.86);
+  border:1px solid rgba(148,163,184,.45);
+  color:#0f172a;
+  font-weight:900;
+  font-size:13px;
+  box-shadow:0 2px 9px rgba(15,23,42,.08);
+}
+.layerMetrics{
+  position:absolute;
+  left:8px;
+  right:8px;
+  bottom:8px;
+  z-index:2;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:5px;
+  padding:8px;
+  border-radius:14px;
+  background:transparent;
+  border:none;
+  box-shadow:none;
+  font-size:12px;
+  font-weight:800;
+  color:#334155;
+}
+.layerMetric{
+  display:block;
+  white-space:nowrap;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.95),
+    0 0 8px rgba(255,255,255,.85);
+}
+.layerMark{
+  font-size:16px;
+  line-height:1;
+  color:#0f172a;
+}
+.layerReason{
+  grid-column:1 / -1;
+  font-size:11px;
+  line-height:1.35;
+  color:#64748b;
+  font-weight:700;
+}
+#layerSelectedNote{
+  position:absolute;
+  left:50%;
+  bottom:22px;
+  transform:translateX(-50%);
+  z-index:4;
+  padding:8px 14px;
+  border-radius:999px;
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(148,163,184,.45);
+  color:#334155;
+  font-size:13px;
+  font-weight:800;
+  box-shadow:0 3px 12px rgba(15,23,42,.12);
+}
+@media(max-width:1000px){
+  #layerGrid{grid-template-columns:repeat(2,1fr); grid-template-rows:repeat(3,1fr);}
+  #layerTitle{font-size:18px}
+  #layerGuide{display:none}
+}
+
+
+#layerGrid.singleLayerMode_unused .layerCard{
+  width:100%;
+  height:100%;
+}
+#layerGrid.singleLayerMode_unused .layerLabel{
+  font-size:18px;
+  padding:9px 14px;
+}
+#layerGrid.singleLayerMode_unused .layerMetrics{
+  left:18px;
+  right:auto;
+  bottom:18px;
+  width:min(520px,calc(100% - 36px));
+  font-size:17px;
+  padding:0;
+  background:transparent;
+  border:none;
+  box-shadow:none;
+}
+#layerGrid.singleLayerMode_unused .layerReason{
+  font-size:13px;
+}
+#layerNavHint{
+  position:absolute;
+  right:20px;
+  bottom:20px;
+  z-index:4;
+  padding:9px 14px;
+  border-radius:999px;
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(148,163,184,.45);
+  color:#334155;
+  font-size:14px;
+  font-weight:900;
+  box-shadow:0 3px 12px rgba(15,23,42,.12);
+}
+
+
+#layerAppTitle{
+  position:absolute;
+  left:50%;
+  top:15px;
+  transform:translateX(-50%);
+  z-index:5;
+  font-size:20px;
+  font-weight:700;
+  letter-spacing:.02em;
+  color:#334155;
+  font-family:"Hiragino Maru Gothic ProN","Yu Gothic","Meiryo",system-ui,sans-serif;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.95),
+    0 0 10px rgba(255,255,255,.75);
+  pointer-events:none;
+}
+#layerSelectedNote{
+  display:none !important;
+}
+
+
+#layerConfirmDialog{
+  position:absolute;
+  inset:0;
+  z-index:20;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(15,23,42,.22);
+  pointer-events:auto;
+}
+#layerConfirmDialog.show{
+  display:flex;
+}
+#layerConfirmBox{
+  width:min(520px,86vw);
+  padding:22px 24px;
+  border-radius:22px;
+  background:rgba(255,255,255,.96);
+  border:1px solid rgba(148,163,184,.42);
+  box-shadow:0 18px 44px rgba(15,23,42,.26);
+  text-align:center;
+}
+#layerConfirmText{
+  font-size:24px;
+  font-weight:900;
+  color:#172033;
+  margin-bottom:18px;
+}
+#layerConfirmButtons{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+#layerConfirmButtons button{
+  font-size:16px;
+  padding:11px 16px;
+}
+.layerCard{
+  cursor:pointer;
+}
+.layerCard.selected::after{
+  content:none;
+  position:absolute;
+  right:10px;
+  top:8px;
+  z-index:3;
+  padding:5px 9px;
+  border-radius:999px;
+  background:rgba(254,243,199,.94);
+  border:1px solid rgba(245,158,11,.55);
+  color:#92400e;
+  font-size:11px;
+  font-weight:900;
+}
+
+
+/* 6面表示時は、STL表示領域を大きく確保する */
+#layerGrid:not(.singleLayerMode) .layerCanvasWrap{
+  inset:0 0 104px 0;
+}
+#layerGrid:not(.singleLayerMode) .layerMetrics{
+  left:8px;
+  right:8px;
+  bottom:6px;
+  padding:0;
+  font-size:14px;
+  line-height:1.35;
+  background:transparent;
+  border:none;
+  box-shadow:none;
+}
+#layerGrid:not(.singleLayerMode) .layerReason{
+  font-size:12px;
+}
+#layerGrid:not(.singleLayerMode) .layerLabel{
+  font-size:13px;
+  padding:6px 9px;
+}
+#layerGrid:not(.singleLayerMode) .layerCard.selected::after{
+  top:8px;
+  right:8px;
+  font-size:12px;
+}
+
+
+/* V2.38: 6面表示の3D領域をカード全体に広げる */
+#layerGrid:not(.singleLayerMode) .layerCanvasWrap{
+  inset:0 !important;
+}
+#layerGrid:not(.singleLayerMode) .layerMetrics{
+  position:absolute;
+  left:8px;
+  right:8px;
+  bottom:6px;
+  z-index:4;
+  width:auto;
+  padding:6px 8px;
+  font-size:13px;
+  line-height:1.35;
+  color:#172033;
+  background:rgba(255,255,255,.58);
+  border-radius:10px;
+  border:none;
+  box-shadow:none;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.95),
+    0 0 7px rgba(255,255,255,.9);
+}
+#layerGrid:not(.singleLayerMode) .layerReason{
+  font-size:11px;
+  color:#475569;
+}
+#layerGrid:not(.singleLayerMode) .layerCard{
+  min-height:0;
+}
+#layerGrid:not(.singleLayerMode) .layerCard.selected::after{
+  content:none !important;
+  display:none !important;
+}
+#layerNavHint{
+  display:none !important;
+}
+
+
+.layerTotalBtn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:64px;
+  min-height:30px;
+  padding:4px 9px;
+  border-radius:12px;
+  border:2px solid rgba(22,163,74,.65);
+  background:rgba(220,252,231,.96);
+  color:#15803d;
+  font-weight:1000;
+  font-size:clamp(15px,1.9vw,23px);
+  line-height:1;
+  box-shadow:
+    0 2px 8px rgba(21,128,61,.18),
+    0 0 0 4px rgba(34,197,94,.10);
+  cursor:pointer;
+}
+.layerTotalBtn:hover{
+  background:#bbf7d0;
+  transform:translateY(-1px);
+}
+.layerTotalBtn.bad{
+  border-color:rgba(100,116,139,.5);
+  background:rgba(241,245,249,.94);
+  color:#334155;
+  box-shadow:0 2px 8px rgba(15,23,42,.08);
+}
+.layerTotalBtn.mid{
+  border-color:rgba(202,138,4,.55);
+  background:rgba(254,249,195,.96);
+  color:#a16207;
+}
+.layerTotalBtn.ng{
+  border-color:rgba(220,38,38,.55);
+  background:rgba(254,226,226,.96);
+  color:#b91c1c;
+}
+.layerLabel{
+  gap:10px;
+}
+
+
+/* V2.38: 積層方向選択時の黄色枠 */
+body.layer-screen-open .layerCard.selected{
+  border-color:#f59e0b !important;
+  box-shadow:
+    0 0 0 4px rgba(245,158,11,.22),
+    0 0 24px rgba(245,158,11,.40),
+    0 8px 22px rgba(15,23,42,.16) !important;
+}
+body.layer-screen-open .layerCard.selected::after{
+  content:none !important;
+  display:none !important;
+}
+
+
+.flowRow{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.flowNowArrow{
+  width:28px;
+  flex:0 0 28px;
+  color:#dc2626;
+  font-size:30px;
+  line-height:1;
+  font-weight:1000;
+  text-align:center;
+  opacity:0;
+  transform:translateX(-2px);
+  text-shadow:0 1px 0 rgba(255,255,255,.75);
+}
+.flowRow.flowActive .flowNowArrow{
+  opacity:1;
+}
+.flowRow .flowStep{
+  flex:1 1 auto;
+}
+
+
+/* V2.38: 現在位置は文字ではなく、赤い太めの矢印グラフィックで表示 */
+.flowNowArrow{
+  position:relative;
+  width:34px;
+  height:28px;
+  flex:0 0 34px;
+  opacity:0;
+  transform:translateX(-2px);
+}
+.flowNowArrow::before{
+  content:"";
+  position:absolute;
+  left:2px;
+  top:50%;
+  width:22px;
+  height:8px;
+  transform:translateY(-50%);
+  background:#dc2626;
+  border-radius:999px;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.8),
+    0 2px 8px rgba(220,38,38,.35);
+}
+.flowNowArrow::after{
+  content:"";
+  position:absolute;
+  right:0;
+  top:50%;
+  transform:translateY(-50%);
+  width:0;
+  height:0;
+  border-top:13px solid transparent;
+  border-bottom:13px solid transparent;
+  border-left:17px solid #dc2626;
+  filter:drop-shadow(0 2px 4px rgba(220,38,38,.35));
+}
+.flowRow.flowActive .flowNowArrow{
+  opacity:1;
+}
+
+
+/* V2.38: 積層方向判定画面でも右端にフローチャートを表示 */
+body.layer-screen-open #flowPanel{
+  display:block !important;
+  z-index:140 !important;
+  top:78px;
+  right:12px;
+}
+body.layer-screen-open #layerGrid{
+  right:260px !important;
+}
+@media(max-width:1100px){
+  body.layer-screen-open #flowPanel{
+    width:190px;
+  }
+  body.layer-screen-open #layerGrid{
+    right:212px !important;
+  }
+}
+
+
+/* V2.38: 積層方向画面ではフローチャートを右上角へ寄せる */
+body.layer-screen-open #flowPanel{
+  display:block !important;
+  z-index:140 !important;
+  top:6px !important;
+  right:6px !important;
+}
+body.layer-screen-open #layerGrid{
+  right:260px !important;
+}
+@media(max-width:1100px){
+  body.layer-screen-open #flowPanel{
+    width:190px;
+    top:6px !important;
+    right:6px !important;
+  }
+  body.layer-screen-open #layerGrid{
+    right:212px !important;
+  }
+}
+
+
+/* V2.38: 現在位置は赤い点滅丸で表示 */
+.flowNowArrow{
+  position:relative !important;
+  width:24px !important;
+  height:24px !important;
+  flex:0 0 24px !important;
+  opacity:0;
+  transform:none !important;
+}
+.flowNowArrow::before{
+  content:"" !important;
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:16px !important;
+  height:16px !important;
+  transform:translate(-50%,-50%) !important;
+  background:#dc2626 !important;
+  border-radius:50% !important;
+  box-shadow:
+    0 0 0 4px rgba(220,38,38,.18),
+    0 0 14px rgba(220,38,38,.55) !important;
+  animation:flowBlinkDot .85s ease-in-out infinite alternate !important;
+}
+.flowNowArrow::after{
+  content:none !important;
+  display:none !important;
+}
+.flowRow.flowActive .flowNowArrow{
+  opacity:1 !important;
+}
+@keyframes flowBlinkDot{
+  from{
+    transform:translate(-50%,-50%) scale(.72);
+    opacity:.55;
+  }
+  to{
+    transform:translate(-50%,-50%) scale(1.18);
+    opacity:1;
+  }
+}
+
+
+/* V2.38: フローチャートを右上端に寄せる */
+#flowPanel{
+  top:8px !important;
+  right:6px !important;
+}
+body.layer-screen-open #flowPanel{
+  top:6px !important;
+  right:6px !important;
+}
+
+
+/* V2.38: フローチャートの↓を処理ボックスの中央に合わせる */
+#flowPanel .flowArrow{
+  width:auto !important;
+  margin:2px 0 2px 34px !important; /* 左の赤丸スペース分だけずらす */
+  text-align:center !important;
+  display:block !important;
+  line-height:1 !important;
+  font-weight:900;
+}
+#flowPanel .flowRow{
+  width:100%;
+}
+#flowPanel .flowRow .flowStep{
+  width:100%;
+}
+
 </style>
 </head>
 <body>
@@ -522,7 +1183,7 @@ body.submit-dialog-open #submitDialog{
       <button id="settingsBtn" class="light">設定変更</button>
     </div>
     <div class="titleBox">
-      <h1>48mmガチャポンFIT　V1.92</h1>
+      <h1>48mmガチャポンFIT　V2.38</h1>
       <div class="sub"></div>
     </div>
     <div class="rightTopGroup">
@@ -534,6 +1195,18 @@ body.submit-dialog-open #submitDialog{
       </div>
     </div>
   </div></div>
+
+
+  <div id="flowPanel" aria-label="提出までの流れ">
+    <div class="flowRow" data-flow-row="load"><span class="flowNowArrow" aria-hidden="true"></span><button id="flowLoadBtn" class="flowStep" type="button">STL読み込み</button></div>
+    <div class="flowArrow">↓</div>
+    <div class="flowRow" data-flow-row="size"><span class="flowNowArrow" aria-hidden="true"></span><button id="flowSizeBtn" class="flowStep" type="button">48mmガチャポン<br>大きさ判定</button></div>
+    <div class="flowArrow">↓</div>
+    <div class="flowRow" data-flow-row="layer"><span class="flowNowArrow" aria-hidden="true"></span><button id="flowLayerBtn" class="flowStep" type="button">積層方向判定</button></div>
+    <div class="flowArrow">↓</div>
+    <div class="flowRow" data-flow-row="submit"><span class="flowNowArrow" aria-hidden="true"></span><button id="flowSubmitBtn" class="flowStep" type="button">提出用STL保存</button></div>
+  </div>
+
 
   <div id="resultOverlay" class="idle">
     <div id="resultMain"></div>
@@ -603,6 +1276,30 @@ body.submit-dialog-open #submitDialog{
       <button id="submitDownloadBtn">保存</button>
     </div>
   </div>
+
+
+  <div id="layerScreen" aria-label="積層方向判定画面">
+    <div id="layerAppTitle">48mmガチャポンFIT　V2.38</div>
+    <div id="layerHeader">
+      <div>
+        <div id="layerTitle">積層方向判定</div>
+        <div id="layerGuide">判定ボタンまたはダブルクリックで出力方向を選べます。</div>
+      </div>
+    </div>
+    <div id="layerGrid"></div>
+    <div id="layerNavHint"></div>
+
+    <div id="layerConfirmDialog" aria-label="積層方向の確認">
+      <div id="layerConfirmBox">
+        <div id="layerConfirmText">この方向に出力しますか？</div>
+        <div id="layerConfirmButtons">
+          <button id="layerConfirmYesBtn">この方向に出力します</button>
+          <button id="layerConfirmNoBtn" class="light">選び直します</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <div id="settingsBackdrop"></div>
   <aside id="settingsPanel">
@@ -676,6 +1373,24 @@ body.submit-dialog-open #submitDialog{
         <option value="4" selected>4mm間隔：標準</option>
         <option value="2">2mm間隔：重い</option>
       </select>
+
+      <label>分かれているSTL</label>
+      <select id="allowSplitSTL">
+        <option value="no" selected>許容しない：提出不可にする</option>
+        <option value="yes">許容する：大きさ判定に進む</option>
+      </select>
+
+      <label>薄すぎる部分の判定 mm</label>
+      <input id="thinLimit" type="number" value="0.8" step="0.1" min="0" max="5">
+      <div class="notice" style="margin-top:8px">
+        0にすると、この判定をしません。初期値は0.8mmです。
+      </div>
+
+      <label>細すぎる部分の判定 mm</label>
+      <input id="narrowLimit" type="number" value="1.0" step="0.1" min="0" max="5">
+      <div class="notice" style="margin-top:8px">
+        0にすると、この判定をしません。初期値は直径1.0mm相当です。
+      </div>
 
       <label>判定中の回転演出</label>
       <select id="spinTime">
@@ -773,7 +1488,8 @@ let suppressEnlargePrompt=false;
 let enlargeCheckCanceledAsFinished=false;
 let fitConfirmedForSubmit=false;
 let isApplyingAdjustment=false;
-let isJudgingSpin=false, spinStartTime=0, spinDuration=0, spinBaseRotation=null;
+let suppressFragileCheckOnOkDisplay=false;
+let isJudgingSpin=false, spinStartTime=0, spinDuration=0, spinMinVisibleMs=0, spinBaseRotation=null, isPosePreviewDuringJudge=false, lastJudgingOverlayUpdate=0, isPromptSpin=false, promptSpinStartTime=0, promptSpinBaseRotation=null;
 
 const logEl=document.getElementById("log");
 
@@ -887,9 +1603,32 @@ function setResult(kind, main, sub){
   document.getElementById("resultSub").innerHTML=String(sub || "").replace(/\\n/g,"<br>").replace(/\n/g,"<br>");
 
   if(kind==="ok" && String(main||"").includes("入ります")){
-    lastFitStatus="ok";
-    fitConfirmedForSubmit=true;
+    // V2.38: 薄すぎ・細すぎの判定は、現在の倍率で「入ります」と表示される時に行う。
+    // 読み込み時点で小さくても、その後に拡大して入る場合があるため、ここで最終確認する。
+    if(objectData?.geom && !suppressFragileCheckOnOkDisplay){
+      recomputeFragileCheckForDisplayedSTL();
+      if(objectData?.fragileInfo?.warning){
+        kind = "ng";
+        main = "STLが細かすぎます";
+        sub = fragileWarningText(objectData.fragileInfo);
+        box.className = kind;
+        mainEl.textContent = main;
+        document.getElementById("resultSub").innerHTML=String(sub || "").replace(/\\n/g,"<br>").replace(/\n/g,"<br>");
+        lastFitStatus="ng";
+        fitConfirmedForSubmit=false;
+        setPill("posePill","判定：STLが細かすぎます");
+      }else{
+        lastFitStatus="ok";
+        fitConfirmedForSubmit=true;
+      }
+    }else{
+      lastFitStatus="ok";
+      fitConfirmedForSubmit=true;
+    }
   }else if(kind==="ng"){
+    stopPromptSpin();
+    isJudgingSpin=false;
+    isPosePreviewDuringJudge=false;
     lastFitStatus="ng";
     fitConfirmedForSubmit=false;
   }else if(kind==="judging"){
@@ -899,6 +1638,7 @@ function setResult(kind, main, sub){
 
   const prompt=document.getElementById("scalePrompt");
   if(prompt) prompt.style.display="none";
+  if(kind !== "judging") stopPromptSpin();
   hideProgress();
 }
 function showScalePrompt(text){
@@ -907,8 +1647,16 @@ function showScalePrompt(text){
   const textEl=document.getElementById("scalePromptText");
   if(textEl && text) textEl.textContent=text;
   if(prompt) prompt.style.display="block";
+
+  // 大きさ判定×で赤表示している時は、はみ出し状態を目で確認できるように動かさない。
+  if(lastFitStatus !== "ng"){
+    startPromptSpin();
+  }else{
+    stopPromptSpin();
+  }
 }
 function showProgress(label, percent, cancellable=false){
+  if(lastFitStatus !== "ng") startPromptSpin();
   const box=document.getElementById("progressBox");
   const text=document.getElementById("progressText");
   const cancelBtn=document.getElementById("cancelCheckBtn");
@@ -977,10 +1725,32 @@ function animate(){
     const now=performance.now();
     const t=now-spinStartTime;
     const p=spinDuration>0 ? Math.min(1,t/spinDuration) : 1;
-    objectMesh.rotation.x=spinBaseRotation.x + t*0.0048;
-    objectMesh.rotation.y=spinBaseRotation.y + t*0.0063;
-    objectMesh.rotation.z=spinBaseRotation.z + Math.sin(t*0.006)*0.8 + t*0.0024;
-    setResult("judging", "判定中…", `内部に入る向きと位置を探索しています。${Math.round(p*100)}%`);
+    // 判定中は常になめらかな連続回転にする。
+    // 主要姿勢のカクカク切り替えではなく、処理中であることを自然に見せる。
+    objectMesh.rotation.x=spinBaseRotation.x + t*0.0072 + Math.sin(t*0.0028)*0.48;
+    objectMesh.rotation.y=spinBaseRotation.y + t*0.0090;
+    objectMesh.rotation.z=spinBaseRotation.z + Math.sin(t*0.0036)*0.72;
+    const phase = spinMinVisibleMs >= 3000 ? "主要な向きを確認しています。" : "内部に入る向きと位置を探索しています。";
+    if(now - lastJudgingOverlayUpdate > 220){
+      lastJudgingOverlayUpdate = now;
+      const progressBox = document.getElementById("progressBox");
+      const progressText = document.getElementById("progressText");
+      const progressBar = document.getElementById("progressBarInner");
+      const pct = Math.round(p*100);
+      if(progressBox && progressBox.style.display !== "none"){
+        if(progressText) progressText.textContent = `${phase}${pct}%`;
+        if(progressBar) progressBar.style.width = `${Math.max(4, Math.min(100, pct))}%`;
+      }else{
+        setResult("judging", "判定中…", `${phase}${pct}%`);
+      }
+    }
+  }else if(isPromptSpin && objectMesh){
+    const now=performance.now();
+    const t=now-promptSpinStartTime;
+    // 確認・待機画面でも、止まって見えないように全方向へゆっくり連続回転する。
+    objectMesh.rotation.y = promptSpinBaseRotation.y + t*0.0045;
+    objectMesh.rotation.x = promptSpinBaseRotation.x + Math.sin(t*0.0022) * 0.34;
+    objectMesh.rotation.z = promptSpinBaseRotation.z + Math.sin(t*0.0026) * 0.28;
   }
   controls.update();
   renderer.render(scene,camera);
@@ -1236,6 +2006,178 @@ function componentWarningText(info){
   return `このSTLは、3Dプリント時に${count}個に分かれてしまう可能性があります。\n部品同士が離れていないか確認してください。\n分かれている場合は、部品同士を接触・結合してから、もう一度STLを書き出してください。`;
 }
 
+function analyzeSTLFragileParts(geom){
+  const settings = getFragileSettings();
+  const thinLimit = settings.thinLimit;
+  const narrowLimit = settings.narrowLimit;
+  const pos = geom?.attributes?.position?.array;
+  if(!pos || pos.length < 9){
+    return {warning:false, issues:[], detail:""};
+  }
+
+  // 既存の連結成分解析を利用する。なければ全体bboxだけで見る。
+  let components = [];
+  try{
+    const compInfo = analyzeSTLConnectedComponents(geom);
+    components = (compInfo.components || []).filter(c => c.triangles >= 8);
+  }catch(e){
+    geom.computeBoundingBox();
+    const size = new THREE.Vector3();
+    geom.boundingBox.getSize(size);
+    components = [{triangles:Math.floor(pos.length/9), bbox:geom.boundingBox.clone(), size}];
+  }
+
+  const issues = [];
+  const totalTris = Math.floor(pos.length / 9);
+  const minTriangles = Math.max(8, Math.floor(totalTris * 0.002));
+
+  for(const c of components){
+    if(c.triangles < minTriangles) continue;
+
+    const size = c.size || (()=>{ const s=new THREE.Vector3(); c.bbox.getSize(s); return s; })();
+    const dims = [Math.abs(size.x), Math.abs(size.y), Math.abs(size.z)].sort((a,b)=>a-b);
+    const minD = dims[0];
+    const midD = dims[1];
+    const maxD = dims[2];
+
+    // 厚さ0.8mm以下：最も薄い方向が0.8mm以下
+    // ただし、ほぼ点のようなノイズは別扱いにしないため、ある程度の面数を持つ成分のみ対象。
+    if(thinLimit > 0 && minD > 0 && minD <= thinLimit){
+      issues.push({
+        type:"thin",
+        value:minD,
+        message:`厚さが約${minD.toFixed(2)}mmの部分があります。`
+      });
+      continue;
+    }
+
+    // 直径1mm以下相当：細い棒・突起を想定し、断面に相当する短い2方向が1mm以下
+    // bboxによる近似なので、「直径」というより印刷が難しい細さの目安。
+    if(narrowLimit > 0 && midD > 0 && midD <= narrowLimit && maxD >= narrowLimit){
+      issues.push({
+        type:"narrow",
+        value:midD,
+        message:`直径${narrowLimit.toFixed(1)}mm以下に相当する細い部分があります。`
+      });
+      continue;
+    }
+
+    // 小さすぎる独立部品：3方向とも1mm以下なら出力困難な小片として扱う。
+    if(narrowLimit > 0 && maxD > 0 && maxD <= narrowLimit){
+      issues.push({
+        type:"tiny",
+        value:maxD,
+        message:`${narrowLimit.toFixed(1)}mm以下の小さすぎる部品があります。`
+      });
+      continue;
+    }
+  }
+
+  // 同じ種類の警告が大量に出ても読みづらいので、種類ごとにまとめる。
+  const unique = [];
+  const seen = new Set();
+  for(const issue of issues){
+    if(seen.has(issue.type)) continue;
+    seen.add(issue.type);
+    unique.push(issue);
+  }
+
+  return {
+    warning: unique.length > 0,
+    issues: unique,
+    detail: unique.map(i=>i.message).join("\\n")
+  };
+}
+
+function fragileWarningText(info){
+  if(!info || !info.warning) return "";
+  const detail = info.detail || "細すぎる部分があります。";
+  return `${detail}\n3Dプリント中に折れたり、うまく出力できなかったりする可能性があります。\n太さや厚さを大きくしてから、もう一度STLを書き出してください。`;
+}
+
+
+function getFragileSettings(){
+  const thin = parseFloat(document.getElementById("thinLimit")?.value ?? "0.8");
+  const narrow = parseFloat(document.getElementById("narrowLimit")?.value ?? "1.0");
+  const allowSplit = (document.getElementById("allowSplitSTL")?.value || "no") === "yes";
+  return {
+    thinLimit: Number.isFinite(thin) ? Math.max(0, thin) : 0.8,
+    narrowLimit: Number.isFinite(narrow) ? Math.max(0, narrow) : 1.0,
+    allowSplit
+  };
+}
+
+function recomputeBlockingChecksForCurrentSTL(){
+  if(!objectData || !objectData.geom) return;
+  objectData.componentInfo = analyzeSTLConnectedComponents(objectData.geom);
+  objectData.fragileInfo = analyzeSTLFragileParts(objectData.geom);
+}
+
+
+function getCurrentDisplayedScaleForFragileCheck(){
+  const candidates = [
+    typeof currentObjectScale !== "undefined" ? currentObjectScale : null,
+    typeof displayScale !== "undefined" ? displayScale : null,
+    typeof currentScale !== "undefined" ? currentScale : null,
+    typeof objectScale !== "undefined" ? objectScale : null
+  ];
+  for(const v of candidates){
+    const n = Number(v);
+    if(Number.isFinite(n) && n > 0) return n;
+  }
+
+  const slider = Number(document.getElementById("bottomScaleSlider")?.value || document.getElementById("scaleSlider")?.value || 100);
+  if(Number.isFinite(slider) && slider > 0) return slider / 100;
+
+  return 1;
+}
+
+
+function makeScaledGeometryForFragileCheck(){
+  if(!objectData?.geom) return null;
+
+  // objectData.geom は現在の実寸をすでに持っている。
+  // 表示倍率やスライダー倍率を再度掛けない。
+  const geom = objectData.geom.clone();
+  geom.computeBoundingBox();
+  return geom;
+}
+
+function recomputeFragileCheckForDisplayedSTL(){
+  if(!objectData?.geom) return;
+  const geom = makeScaledGeometryForFragileCheck();
+  objectData.fragileInfo = analyzeSTLFragileParts(geom || objectData.geom);
+}
+
+function stopIfDisplayedSTLIsFragile(){
+  recomputeFragileCheckForDisplayedSTL();
+  if(objectData?.fragileInfo?.warning){
+    lastFitStatus="ng";
+    fitConfirmedForSubmit=false;
+    setPill("posePill","判定：STLが細かすぎます");
+    setResult("ng","STLが細かすぎます", fragileWarningText(objectData.fragileInfo));
+    return true;
+  }
+  return false;
+}
+
+function objectHasBlockingProblem(){
+  const settings = getFragileSettings();
+  return !!(
+    (!settings.allowSplit && objectData?.componentInfo?.warning)
+  );
+}
+
+function showBlockingProblemMessage(){
+  const settings = getFragileSettings();
+  if(!settings.allowSplit && objectData?.componentInfo?.warning){
+    setResult("ng","STLが分かれる可能性があります", componentWarningText(objectData.componentInfo));
+    return true;
+  }
+  return false;
+}
+
+
 
 function radiusAtYForGeom(verts, y){
   let best = 0;
@@ -1402,7 +2344,45 @@ function poseOverflow(points,mat,t){
   }
   return maxOver;
 }
-function readObjectFile(f){
+
+function isSTLDropAllowedNow(){
+  // 積層方向判定画面では、画面へのドラッグ＆ドロップで新しいSTLを読み込まない。
+  if(document.body.classList.contains("layer-screen-open")) return false;
+
+  // 提出用STL保存画面では、誤読込を防ぐ。
+  const submitDialog = document.getElementById("submitDialog");
+  if(submitDialog && submitDialog.style.display !== "none" && submitDialog.offsetParent !== null) return false;
+
+  // 積層方向を確定した後や提出保存段階では、ドロップで差し替えない。
+  if(typeof flow !== "undefined" && flow.layerDone) return false;
+
+  return true;
+}
+
+function backToSizeCheckScreenFromLayer(){
+  if(document.body.classList.contains("layer-screen-open")){
+    closeLayerOrientationScreen();
+  }
+  if(typeof closeLayerConfirm === "function") closeLayerConfirm();
+
+  if(objectData){
+    if(lastFitStatus === "ok"){
+      setResult("ok","入ります","ガチャ玉の内径内に収まりました。\n必要に応じて、もう一度大きさ判定できます。");
+      if(bestPose) applyPose();
+    }else if(lastFitStatus === "ng"){
+      setResult("ng","まだ入りません","赤いSTLがはみ出している状態です。マウスで動かして確認できます。");
+    }else{
+      setResult("judging","大きさ判定","48mmガチャポンに入るか、もう一度判定できます。");
+    }
+  }
+}
+
+function readObjectFile(f, source="drop"){
+  if(source === "drop" && !isSTLDropAllowedNow()){
+    setResult("judging","STL読み込みはできません","現在の工程では、画面へのドラッグ＆ドロップでSTLを読み込めません。\n新しいSTLを読み込む場合は、フローチャートの「STL読み込み」に戻ってください。");
+    return;
+  }
+
   if(!f || !f.name.toLowerCase().endsWith(".stl")){
     setResult("ng","STLではありません","拡張子が .stl のファイルをドロップしてください。");
     return;
@@ -1411,7 +2391,7 @@ function readObjectFile(f){
   reader.onload=e=>{
     loadObjectBuffer(e.target.result,f.name);
     setTimeout(()=>{
-      if(objectData?.componentInfo?.warning){
+      if(objectHasBlockingProblem()){
         return;
       }
       judge();
@@ -1420,6 +2400,10 @@ function readObjectFile(f){
   reader.readAsArrayBuffer(f);
 }
 function loadObjectBuffer(buffer,name){
+  if(document.body.classList.contains("layer-screen-open")){
+    closeLayerOrientationScreen();
+  }
+
   const loader=new THREE.STLLoader();
   const geom=loader.parse(buffer);
 
@@ -1439,7 +2423,8 @@ function loadObjectBuffer(buffer,name){
   const vertices=getUniqueVertices(geom);
 
   const componentInfo = analyzeSTLConnectedComponents(geom);
-  objectData={name, geom, vertices, bbox:geom.boundingBox.clone(), size, componentInfo};
+  const fragileInfo = analyzeSTLFragileParts(geom);
+  objectData={name, geom, vertices, bbox:geom.boundingBox.clone(), size, componentInfo, fragileInfo};
   if(objectMesh) scene.remove(objectMesh);
   objectMesh=new THREE.Mesh(geom, new THREE.MeshPhongMaterial({color:0xfacc15, shininess:40}));
   objectMesh.scale.setScalar(1);
@@ -1467,7 +2452,7 @@ function loadObjectBuffer(buffer,name){
   document.getElementById("downloadShrinkBtn").style.display="none";
   if(document.getElementById("scaleInfo")) document.getElementById("scaleInfo").textContent="-";
   setPill("posePill","判定：準備中");
-  if(componentInfo.warning){
+  if(componentInfo.warning && !getFragileSettings().allowSplit){
     lastFitStatus="ng";
     fitConfirmedForSubmit=false;
     if(objectMesh?.material){
@@ -1478,31 +2463,47 @@ function loadObjectBuffer(buffer,name){
     }
     setPill("posePill","判定：STL分離の可能性");
     setResult("ng","STLが分かれる可能性があります", componentWarningText(componentInfo));
+  }else if(fragileInfo.warning){
+    lastFitStatus="ng";
+    fitConfirmedForSubmit=false;
+    if(objectMesh?.material){
+      objectMesh.material.color.set(0xff3333);
+      objectMesh.material.opacity = 0.62;
+      objectMesh.material.transparent = true;
+      objectMesh.material.needsUpdate = true;
+    }
+    setPill("posePill","判定：STLが細かすぎます");
+    setResult("ng","STLが細かすぎます", fragileWarningText(fragileInfo));
   }else{
     setResult("judging","読み込み完了","自動で判定を開始します。");
   }
 
   clearLog(`作品STL読込：${name}\n寸法：${fmt(size.x)} × ${fmt(size.y)} × ${fmt(size.z)} mm\n頂点数：${vertices.length}
 メッシュ成分：${componentInfo.significantCount}個 / 印刷時の分離候補：${componentInfo.printIslandCount}個
-上方向補正：${(document.getElementById("objectUpAxis")?.value || "z")==="z" ? "Z軸上→Y軸上に変換" : "補正なし"}`);
+細かすぎる部分：${fragileInfo.warning ? "あり" : "なし"}
+分離STL：${getFragileSettings().allowSplit ? "許容" : "許容しない"}
+薄さ判定：${getFragileSettings().thinLimit}mm / 細さ判定：${getFragileSettings().narrowLimit}mm
+読み込み時の向き補正：${(document.getElementById("objectUpAxis")?.value || "z")==="z" ? "通常補正あり" : "補正なし"}`);
 }
 function setupDrop(){
   const file=document.getElementById("objectFile");
   document.getElementById("fileBtn").addEventListener("click",()=>file.click());
   file.addEventListener("change",e=>{
     const f=e.target.files[0];
-    if(f) readObjectFile(f);
+    if(f) readObjectFile(f, "file");
     file.value="";
   });
 
   let dragDepth=0;
   window.addEventListener("dragenter",e=>{
     e.preventDefault();
+    if(!isSTLDropAllowedNow()) return;
     dragDepth++;
     document.body.classList.add("dragging");
   });
   window.addEventListener("dragover",e=>{
     e.preventDefault();
+    if(!isSTLDropAllowedNow()) return;
     document.body.classList.add("dragging");
   });
   window.addEventListener("dragleave",e=>{
@@ -1515,7 +2516,7 @@ function setupDrop(){
     dragDepth=0;
     document.body.classList.remove("dragging");
     const f=e.dataTransfer.files && e.dataTransfer.files[0];
-    if(f) readObjectFile(f);
+    if(f) readObjectFile(f, "drop");
   });
 }
 function samplePoints(vertices,maxN){
@@ -1560,15 +2561,55 @@ function translationCandidates(step){
   arr.sort((a,b)=>a.lengthSq()-b.lengthSq());
   return arr;
 }
-function startSpin(ms){
-  if(!objectMesh || ms<=0) return;
-  isJudgingSpin=true;
-  spinDuration=ms;
-  spinStartTime=performance.now();
-  spinBaseRotation=objectMesh.rotation.clone();
+
+function previewJudgingPose(rx, ry, rz, t=null){
+  // V2.38: 主要姿勢を1つずつ表示するとカクカクして見えるため、
+  // 判定中は連続回転アニメーションに統一する。
+  // この関数は互換性のため残すが、表示姿勢は強制変更しない。
+  if(!objectMesh) return;
   objectMesh.material.color.setHex(0xfacc15);
 }
-function stopSpin(){ isJudgingSpin=false; }
+
+function previewJudgingPoseByMatrix(rx, ry, rz, t=null){
+  previewJudgingPose(rx, ry, rz, t);
+}
+
+
+function startPromptSpin(){
+  if(!objectMesh) return;
+  isPromptSpin = true;
+  promptSpinStartTime = performance.now();
+  promptSpinBaseRotation = objectMesh.rotation.clone();
+  objectMesh.material.color.setHex(0xfacc15);
+}
+
+function stopPromptSpin(){
+  isPromptSpin = false;
+  promptSpinBaseRotation = null;
+}
+
+function startSpin(ms, minVisibleMs=0){
+  if(!objectMesh) return;
+  isJudgingSpin=true;
+  isPosePreviewDuringJudge=false;
+  spinDuration=Math.max(1, ms || 1);
+  spinStartTime=performance.now();
+  spinMinVisibleMs=Math.max(0, minVisibleMs || 0);
+  spinBaseRotation=objectMesh.rotation.clone();
+  lastJudgingOverlayUpdate = 0;
+  stopPromptSpin();
+  objectMesh.material.color.setHex(0xfacc15);
+}
+
+async function stopSpin(){
+  if(isJudgingSpin && spinMinVisibleMs > 0){
+    const rest = spinMinVisibleMs - (performance.now() - spinStartTime);
+    if(rest > 0) await sleep(rest);
+  }
+  isJudgingSpin=false;
+  isPosePreviewDuringJudge=false;
+  spinMinVisibleMs=0;
+}
 function isZeroRotationPose(pose){
   if(!pose) return false;
   const norm = a => ((a % 360) + 360) % 360;
@@ -1827,7 +2868,7 @@ function findMaxFitScale(points, pose, maxScale){
 
 function makeScaledSTLBlob(scale){
   if(!objectData || !objectData.geom) return null;
-  const geom=objectData.geom;
+  const geom=(typeof getGeometryForLayerExport === "function" ? getGeometryForLayerExport() : objectData.geom);
   const pos=geom.attributes.position.array;
   const triCount=pos.length/9;
   const buffer=new ArrayBuffer(84 + triCount*50);
@@ -1960,15 +3001,154 @@ function showScaledSTLOnScreen(){
   applyScaleAndRejudge();
 }
 
+
+
+function convertAppYUpGeometryToSTLZUp(geom){
+  if(!geom?.attributes?.position?.array) return geom;
+
+  const src = geom.attributes.position.array;
+  const converted = geom.clone();
+  const dst = converted.attributes.position.array;
+
+  // アプリ内座標は Y が上。
+  // Tinkercad/スライサーでは Z が上として扱われるため、
+  // app(x, y, z) -> stl(x, -z, y) に変換する。
+  // これでアプリで上だった方向が、STL上のZ方向になる。
+  for(let i=0; i<src.length; i+=3){
+    const x = src[i];
+    const y = src[i+1];
+    const z = src[i+2];
+
+    dst[i]   = x;
+    dst[i+1] = -z;
+    dst[i+2] = y;
+  }
+
+  converted.attributes.position.needsUpdate = true;
+  converted.computeBoundingBox();
+
+  // STL/Tinkercad側で扱いやすいように、Z=0に接地させ、XY中心を原点付近に置く。
+  const box = converted.boundingBox;
+  const center = new THREE.Vector3();
+  box.getCenter(center);
+  converted.translate(-center.x, -center.y, -box.min.z);
+
+  converted.computeBoundingBox();
+  converted.computeBoundingSphere();
+  converted.computeVertexNormals();
+  return converted;
+}
+
+
+function scheduleResetAfterDownload(){
+  // ブラウザの保存ダイアログが開く場合、クリック直後に消すと「戻った時」にSTLがなくなる。
+  // そこで、ウィンドウがいったん非アクティブになって戻ってきた後にリセットする。
+  let resetDone = false;
+  const startedAt = performance.now();
+
+  function doReset(){
+    if(resetDone) return;
+    resetDone = true;
+    window.removeEventListener("focus", onFocus, true);
+    document.removeEventListener("visibilitychange", onVisible, true);
+    setTimeout(resetAfterSubmitSave, 350);
+  }
+
+  function onFocus(){
+    // 保存ダイアログから戻った直後に消す
+    if(performance.now() - startedAt > 300){
+      doReset();
+    }
+  }
+
+  function onVisible(){
+    if(document.visibilityState === "visible" && performance.now() - startedAt > 300){
+      doReset();
+    }
+  }
+
+  window.addEventListener("focus", onFocus, true);
+  document.addEventListener("visibilitychange", onVisible, true);
+
+  // 環境によっては保存ダイアログでfocusが外れないため、遅めの保険をかける。
+  // 少なくともボタンを押した瞬間には消えない。
+  setTimeout(()=>{
+    if(!resetDone) doReset();
+  }, 4500);
+}
+
+function resetAfterSubmitSave(){
+  try{
+    if(objectMesh){
+      scene.remove(objectMesh);
+      objectMesh.geometry?.dispose?.();
+      objectMesh.material?.dispose?.();
+    }
+  }catch(e){}
+
+  objectMesh = null;
+  objectData = null;
+  lastFitStatus = "none";
+  fitConfirmedForSubmit = false;
+  enlargeCheckCanceledAsFinished = false;
+
+  if(typeof layerOrientationApplied !== "undefined") layerOrientationApplied = false;
+  if(typeof layerSelectedOrientationIndex !== "undefined") layerSelectedOrientationIndex = null;
+
+  try{
+    const input = document.getElementById("objectFile");
+    if(input) input.value = "";
+  }catch(e){}
+
+  try{
+    setPill("posePill","STL未読み込み");
+  }catch(e){}
+
+  setResult("judging","STL読み込み","提出用STLを保存しました。次のSTLを読み込んでください。");
+
+  try{
+    window.dispatchEvent(new CustomEvent("submitSaveReset"));
+  }catch(e){}
+
+  try{
+    if(typeof refreshScene === "function") refreshScene();
+  }catch(e){}
+}
+
+
 function makeCurrentSTLBlob(scale=1){
   if(!objectData || !objectData.geom) return null;
-  const geom=objectData.geom;
+
+  let geom = (typeof getGeometryForLayerExport === "function")
+    ? getGeometryForLayerExport()
+    : objectData.geom.clone();
+
+  if(!geom || !geom.attributes?.position?.array) return null;
+
+  // アプリ内の画面用座標を、Tinkercadやスライサー向けの座標へ変換する。
+  geom = convertAppYUpGeometryToSTLZUp(geom);
+
+  // 念のため、内部用保存などで追加scaleが指定された場合だけ反映する。
+  // 提出用STL保存では scale=1 なので、現在実寸をそのまま保存する。
+  const extraScale = Number(scale);
+  if(Number.isFinite(extraScale) && extraScale > 0 && Math.abs(extraScale - 1) > 1e-9){
+    geom.scale(extraScale, extraScale, extraScale);
+    geom.computeBoundingBox();
+    const box = geom.boundingBox;
+    const center = new THREE.Vector3();
+    box.getCenter(center);
+    geom.translate(-center.x, -center.y, -box.min.z);
+    geom.computeBoundingBox();
+    geom.computeBoundingSphere();
+    geom.computeVertexNormals();
+  }
+
   const pos=geom.attributes.position.array;
   const triCount=pos.length/9;
   const buffer=new ArrayBuffer(84 + triCount*50);
   const dv=new DataView(buffer);
 
-  const title="adjusted by gachadama fit checker";
+  const title="48mm gachapon fit exported z-up STL";
   for(let i=0;i<Math.min(80,title.length);i++){
     dv.setUint8(i,title.charCodeAt(i));
   }
@@ -1979,20 +3159,34 @@ function makeCurrentSTLBlob(scale=1){
   const ab=new THREE.Vector3(), ac=new THREE.Vector3(), n=new THREE.Vector3();
 
   for(let i=0;i<pos.length;i+=9){
-    a.set(pos[i]*scale,pos[i+1]*scale,pos[i+2]*scale);
-    b.set(pos[i+3]*scale,pos[i+4]*scale,pos[i+5]*scale);
-    c.set(pos[i+6]*scale,pos[i+7]*scale,pos[i+8]*scale);
+    a.set(pos[i],pos[i+1],pos[i+2]);
+    b.set(pos[i+3],pos[i+4],pos[i+5]);
+    c.set(pos[i+6],pos[i+7],pos[i+8]);
 
     ab.subVectors(b,a);
     ac.subVectors(c,a);
     n.crossVectors(ab,ac).normalize();
 
-    dv.setFloat32(offset,n.x,true); dv.setFloat32(offset+4,n.y,true); dv.setFloat32(offset+8,n.z,true); offset+=12;
-    for(const v of [a,b,c]){
-      dv.setFloat32(offset,v.x,true); dv.setFloat32(offset+4,v.y,true); dv.setFloat32(offset+8,v.z,true); offset+=12;
-    }
-    dv.setUint16(offset,0,true); offset+=2;
+    dv.setFloat32(offset, n.x, true);
+    dv.setFloat32(offset+4, n.y, true);
+    dv.setFloat32(offset+8, n.z, true);
+
+    dv.setFloat32(offset+12, a.x, true);
+    dv.setFloat32(offset+16, a.y, true);
+    dv.setFloat32(offset+20, a.z, true);
+
+    dv.setFloat32(offset+24, b.x, true);
+    dv.setFloat32(offset+28, b.y, true);
+    dv.setFloat32(offset+32, b.z, true);
+
+    dv.setFloat32(offset+36, c.x, true);
+    dv.setFloat32(offset+40, c.y, true);
+    dv.setFloat32(offset+44, c.z, true);
+
+    dv.setUint16(offset+48, 0, true);
+    offset += 50;
   }
+
   return new Blob([buffer], {type:"application/sla"});
 }
 function downloadScaledSTL(){
@@ -2105,9 +3299,13 @@ function strictScaleForPose(pose, maxScale){
 function submitDownloadSTL(){
   if(!objectData) return;
 
-  if(objectData.componentInfo?.warning){
+  if(objectHasBlockingProblem()){
     closeSubmitDialog();
-    setResult("ng","STLが分かれる可能性があります", componentWarningText(objectData.componentInfo));
+    showBlockingProblemMessage();
+    return;
+  }
+  if(stopIfDisplayedSTLIsFragile()){
+    closeSubmitDialog();
     return;
   }
 
@@ -2133,6 +3331,12 @@ function submitDownloadSTL(){
     return;
   }
 
+  if(!layerOrientationApplied || layerSelectedOrientationIndex === null || layerSelectedOrientationIndex === undefined){
+    closeSubmitDialog();
+    setResult("judging","積層方向を選んでください。","提出用STL保存の前に、フローチャートの「積層方向判定」で印刷方向を選択してください。");
+    return;
+  }
+
   const blob=makeCurrentSTLBlob(1);
   if(!blob) return;
 
@@ -2146,6 +3350,9 @@ function submitDownloadSTL(){
   a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),1000);
   closeSubmitDialog();
+
+  // 保存ダイアログから画面に戻ってから、次のSTLを扱うために読み込み前の状態へ戻す。
+  scheduleResetAfterDownload();
 }
 
 function currentVisibleSTLFits(){
@@ -2187,8 +3394,8 @@ function showActuallyNotFitMessage(){
 async function ensureFitBeforeSubmit(){
   if(!objectData) return false;
 
-  if(objectData.componentInfo?.warning){
-    setResult("ng","STLが分かれる可能性があります", componentWarningText(objectData.componentInfo));
+  if(objectHasBlockingProblem()){
+    showBlockingProblemMessage();
     return false;
   }
 
@@ -2196,6 +3403,7 @@ async function ensureFitBeforeSubmit(){
   // 追加の拡大確認中の場合は、提出前判定は完了済みとみなす。
   if(enlargeCheckCanceledAsFinished || fitConfirmedForSubmit){
     if(currentVisibleSTLFits()){
+      if(stopIfDisplayedSTLIsFragile()) return false;
       lastFitStatus="ok";
       return true;
     }else{
@@ -2222,7 +3430,10 @@ async function ensureFitBeforeSubmit(){
     }
   }
 
-  if(lastFitStatus==="ok") return true;
+  if(lastFitStatus==="ok"){
+    if(stopIfDisplayedSTLIsFragile()) return false;
+    return true;
+  }
 
   // 入らない場合は、確認メッセージを出し、はいなら自動縮小を開始する。
   const yes = await showCenterConfirm("STLはまだ大きすぎるので保存できません。自動で倍率を変更しますか？");
@@ -2270,6 +3481,7 @@ async function autoShrinkUntilFitsForSubmit(){
     }
 
     if(lastFitStatus==="ok"){
+      if(stopIfDisplayedSTLIsFragile()) return false;
       setResult("ok","修正済みSTLは入ります","STL倍率を自動で調整しました。\n内容を確認してから、もう一度「提出用STL保存」を押してください。");
       return "adjusted";
     }
@@ -2286,11 +3498,13 @@ async function autoShrinkUntilFitsForSubmit(){
 async function judge(){
   if(!objectData || !containerData) return;
 
-  if(objectData.componentInfo?.warning){
+  if(objectHasBlockingProblem()){
     lastFitStatus="ng";
     fitConfirmedForSubmit=false;
-    setPill("posePill","判定：STL分離の可能性");
-    setResult("ng","STLが分かれる可能性があります", componentWarningText(objectData.componentInfo));
+    if(objectData.componentInfo?.warning){
+      setPill("posePill","判定：STL分離の可能性");
+    }
+    showBlockingProblemMessage();
     return;
   }
   buildRadiusProfile();
@@ -2345,7 +3559,9 @@ async function judge(){
   bestPose=null;
 
   const start=performance.now();
-  startSpin(Math.max(spinMs, failSpinMs));
+  // 主要な向きを確認していることが見えるように、短時間で判定できても最低3秒はアニメーションを見せる。
+  // 判定が長い場合も、処理中はできるだけ回転表示を続ける。
+  startSpin(Math.max(spinMs, failSpinMs, timeLimit, 3000), 3000);
 
   let tried=0, tested=0;
   const total=angles.length**3;
@@ -2358,6 +3574,15 @@ async function judge(){
     for(const ry of angles){
       for(const rz of angles){
         tried++;
+
+        // 主要な向きを確認中は、実際に試している向きにSTL表示も合わせる。
+        // 表示更新は間引き、判定処理が重くなりすぎないようにする。
+        if(tried <= 80 && tried % 1 === 0){
+          await sleep(20);
+        }else if(tried % 12 === 0){
+          await sleep(0);
+        }
+
         const mat=matrixFromAngles(rx,ry,rz);
         for(const t of trans){
           tested++;
@@ -2381,7 +3606,8 @@ async function judge(){
             bestPose=refinePoseForBetterDisplay({rx,ry,rz,t:t.clone()});
             const rest=Math.max(0, spinMs-(performance.now()-start));
             if(rest>0) await sleep(rest);
-            stopSpin();
+            await stopSpin();
+            suppressFragileCheckOnOkDisplay = true;
             if(hasAdjustedModel){
               setResult("ok","修正済みSTLは入ります","拡大・縮小後のSTLが、ガチャ玉の内径内に収まりました。\n再度調整する場合は、画面下のスライダーでSTL倍率を変えてください。\n再度判定します。");
               setPill("posePill","判定：修正済みSTLは入ります");
@@ -2389,6 +3615,7 @@ async function judge(){
               setResult("ok","入ります","ガチャ玉の内径内に収まりました。\n再度調整する場合は、画面下のスライダーでSTL倍率を変えてください。\n再度判定します。");
               setPill("posePill","判定：入ります");
             }
+            suppressFragileCheckOnOkDisplay = false;
             document.getElementById("rotInfo").textContent=`X ${bestPose.rx}° / Y ${bestPose.ry}° / Z ${bestPose.rz}°`;
             document.getElementById("posInfo").textContent=`${fmt(bestPose.t.x)}, ${fmt(bestPose.t.y)}, ${fmt(bestPose.t.z)} mm`;
             document.getElementById("overflowInfo").textContent="0.0 mm";
@@ -2399,6 +3626,7 @@ async function judge(){
             document.getElementById("downloadShrinkBtn").style.display="none";
             document.getElementById("manualJudgeBtn").disabled=false;
             document.getElementById("showPoseBtn").disabled=false;
+            isPosePreviewDuringJudge = false;
             objectMesh.scale.setScalar(1);
             objectMesh.material.color.setHex(0xfacc15);
             applyPose();
@@ -2433,6 +3661,11 @@ async function judge(){
                 enlargeCheckCanceledAsFinished=true;
 
                 if(currentVisibleSTLFits()){
+                  stopPromptSpin();
+                  isPosePreviewDuringJudge = false;
+                  if(bestPose){
+                    applyPose();
+                  }
                   fitConfirmedForSubmit=true;
                   lastFitStatus="ok";
                   if(hasAdjustedModel){
@@ -2469,6 +3702,11 @@ async function judge(){
                 }
               }
               if(!recommendedScale){
+                stopPromptSpin();
+                isPosePreviewDuringJudge = false;
+                if(bestPose){
+                  applyPose();
+                }
                 if(hasAdjustedModel){
                   setResult("ok","修正済みSTLは入ります","拡大・縮小後のSTLが、ガチャ玉の内径内に収まりました。\n再度調整する場合は、画面下のスライダーでSTL倍率を変えてください。\n再度判定します。");
                   setPill("posePill","判定：修正済みSTLは入ります");
@@ -2511,7 +3749,7 @@ async function judge(){
     setResult("judging","判定中…","最後まで入る向きと位置を確認しています。");
     await sleep(failRest);
   }
-  stopSpin();
+  await stopSpin();
 
   bestPose=minPose;
   const oneSideText=Number.isFinite(minOverflow) ? fmt(minOverflow) : "-";
@@ -2535,9 +3773,9 @@ async function judge(){
   }
 
   if(timedOut){
-    setResult("ng","", `探索しましたが、入る配置は見つかりませんでした。作品を${scaleText}程度に縮小して、再度判定できます。`);
+    setResult("ng","", `探索しましたが、入る配置は見つかりませんでした。赤いSTLがはみ出している状態です。マウスで動かして確認できます。\n作品を${scaleText}程度に縮小して、再度判定できます。`);
   }else{
-    setResult("ng",`約${shrinkText}mm 小さくしてください`, `作品全体を${scaleText}程度に均等縮小して、再度判定できます。`);
+    setResult("ng",`約${shrinkText}mm 小さくしてください`, `赤いSTLがはみ出している状態です。マウスで動かして、どこが入らないか確認できます。\n作品全体を${scaleText}程度に均等縮小して、再度判定できます。`);
   }
   if(recommendedScale) showScalePrompt("STLを自動で縮小しますか？");
   setPill("posePill",`判定：縮小が必要 ${scaleText}`);
@@ -2546,19 +3784,27 @@ async function judge(){
   if(minPose){
     document.getElementById("rotInfo").textContent=`X ${minPose.rx}° / Y ${minPose.ry}° / Z ${minPose.rz}°`;
     document.getElementById("posInfo").textContent=`${fmt(minPose.t.x)}, ${fmt(minPose.t.y)}, ${fmt(minPose.t.z)} mm`;
+    isPosePreviewDuringJudge = false;
+    isJudgingSpin = false;
+    stopPromptSpin();
     applyPose();
   }
   document.getElementById("manualJudgeBtn").disabled=false;
   document.getElementById("showPoseBtn").disabled=bestPose ? false : true;
-  if(objectMesh) objectMesh.material.color.setHex(0xef4444);
+  if(objectMesh){
+    objectMesh.material.color.setHex(0xef4444);
+    objectMesh.material.opacity = 0.72;
+    objectMesh.material.transparent = true;
+  }
+  controls.enabled = true;
   log(`${timedOut ? "時間切れで終了" : "終了"}：${tried}姿勢、${tested}回検査。片側最大はみ出し ${oneSideText}mm / 縮小目安 ${shrinkText}mm`);
 }
 
 async function applyScaleFromSlider(){
   if(!objectData || !objectData.geom) return;
 
-  if(objectData.componentInfo?.warning){
-    setResult("ng","STLが分かれる可能性があります", componentWarningText(objectData.componentInfo));
+  if(objectHasBlockingProblem()){
+    showBlockingProblemMessage();
     return;
   }
   enlargeCheckCanceledAsFinished=false;
@@ -2693,6 +3939,1179 @@ function boot(){
   log("準備完了。判定したい作品STLを画面にドロップしてください。");
 }
 window.addEventListener("DOMContentLoaded", boot);
+
+
+
+function setupBlockingSettingEvents(){
+  ["allowSplitSTL","thinLimit","narrowLimit"].forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener("change", ()=>{
+      if(!objectData || !objectData.geom) return;
+      recomputeBlockingChecksForCurrentSTL();
+      if(objectHasBlockingProblem()){
+        lastFitStatus="ng";
+        fitConfirmedForSubmit=false;
+        showBlockingProblemMessage();
+      }else if(lastFitStatus === "ok" && currentVisibleSTLFits()){
+        stopIfDisplayedSTLIsFragile();
+      }else{
+        lastFitStatus="unknown";
+        fitConfirmedForSubmit=false;
+        setResult("judging","設定を変更しました","もう一度判定します。");
+        setTimeout(()=>judge(), 80);
+      }
+    });
+  });
+}
+
+
+if(document.readyState === "loading"){
+  document.addEventListener("DOMContentLoaded", setupBlockingSettingEvents);
+}else{
+  setupBlockingSettingEvents();
+}
+
+
+let layerSelectedOrientationIndex = null;
+let layerOrientationApplied = false;
+let layerViewState = null;
+
+const LAYER_ORIENTATIONS = [
+  {id:"Y+", label:"表面を上", short:"表面", rx:0, ry:0, rz:0},
+  {id:"Y-", label:"裏面を上", short:"裏面", rx:Math.PI, ry:0, rz:0},
+  {id:"X+", label:"横向き 1", short:"横1", rx:0, ry:0, rz:Math.PI/2},
+  {id:"X-", label:"横向き 2", short:"横2", rx:0, ry:0, rz:-Math.PI/2},
+  {id:"Z+", label:"縦向き 1", short:"縦1", rx:-Math.PI/2, ry:0, rz:0},
+  {id:"Z-", label:"縦向き 2", short:"縦2", rx:Math.PI/2, ry:0, rz:0}
+];
+
+function layerOrientationMatrix(ori){
+  const e = new THREE.Euler(ori.rx || 0, ori.ry || 0, ori.rz || 0, "XYZ");
+  return new THREE.Matrix4().makeRotationFromEuler(e);
+}
+
+function makeLayerGeometry(orientationIndex){
+  if(!objectData?.geom) return null;
+  const ori = LAYER_ORIENTATIONS[orientationIndex];
+  const geom = objectData.geom.clone();
+
+  // V2.38: 積層方向判定では立体の実寸は変えない。
+  // 見やすさのための拡大縮小はカメラ側だけで行う。
+  geom.applyMatrix4(layerOrientationMatrix(ori));
+  geom.computeBoundingBox();
+
+  // グランド上に置き、中心を原点付近へ移動する
+  const box = geom.boundingBox;
+  const center = new THREE.Vector3();
+  box.getCenter(center);
+  geom.translate(-center.x, -box.min.y, -center.z);
+  geom.computeBoundingBox();
+  geom.computeBoundingSphere();
+  geom.computeVertexNormals();
+  return geom;
+}
+
+
+
+function getGeometryForLayerExport(){
+  if(!objectData?.geom) return null;
+
+  // objectData.geom は、読み込み後の補正や自動拡大・縮小、スライダー変更後の
+  // 現在の実寸をすでに持っている。
+  // ここで表示用倍率やスライダー倍率を再度掛けると、提出用STLが巨大化/縮小化する。
+  const geom = objectData.geom.clone();
+
+  // 積層方向判定で選んだ向きへ、STL座標そのものを回転する。
+  // 表示倍率は使わず、実寸は変えない。
+  const idx = layerSelectedOrientationIndex;
+  if(idx !== null && idx !== undefined && LAYER_ORIENTATIONS[idx]){
+    geom.applyMatrix4(layerOrientationMatrix(LAYER_ORIENTATIONS[idx]));
+  }
+
+  // スライサーで扱いやすいよう、接地面を画面用座標のグランド面へ合わせ、
+  // 中心を原点付近へ移動する。寸法は変えない。
+  geom.computeBoundingBox();
+  const box = geom.boundingBox;
+  const center = new THREE.Vector3();
+  box.getCenter(center);
+  geom.translate(-center.x, -box.min.y, -center.z);
+
+  geom.computeBoundingBox();
+  geom.computeBoundingSphere();
+  geom.computeVertexNormals();
+  return geom;
+}
+
+function layerMarkFromScore(score){
+  if(score >= 90) return "◎";
+  if(score >= 70) return "○";
+  if(score >= 45) return "△";
+  return "×";
+}
+
+function layerScoreLabel(score){
+  return layerMarkFromScore(score);
+}
+
+function triangleArea(a,b,c){
+  const ab = new THREE.Vector3().subVectors(b,a);
+  const ac = new THREE.Vector3().subVectors(c,a);
+  return ab.cross(ac).length() * 0.5;
+}
+
+
+
+
+function supportAmountLabel(ratio){
+  if(ratio <= 0.01) return "なし";
+  if(ratio <= 0.16) return "少なめ";
+  return "多め";
+}
+
+function supportAmountScore(label){
+  if(label === "なし") return 100;
+  if(label === "少なめ") return 75;
+  return 35;
+}
+
+
+function estimateVisibleSupportScarRisk(geom, supportEstimate){
+  const cells = supportEstimate?.cells || [];
+  if(!geom || !cells.length) return {risk:"なし", score:100, visibleRatio:0};
+
+  geom.computeBoundingBox();
+  const box = geom.boundingBox;
+  const size = new THREE.Vector3();
+  box.getSize(size);
+
+  const height = Math.max(0.001, size.y);
+  const minY = box.min.y;
+
+  let visibleCount = 0;
+
+  for(const cell of cells){
+    const y = cell.y1;
+    const yNorm = (y - minY) / height;
+
+    // 上面や側面に近い高い位置のサポート材は、痕跡が目につきやすい。
+    // 低い内部や底面寄りのサポート材は、比較的目立ちにくい。
+    if(yNorm > 0.62){
+      visibleCount++;
+    }
+  }
+
+  const visibleRatio = visibleCount / Math.max(1, cells.length);
+
+  if(visibleRatio <= 0.08) return {risk:"少ない", score:100, visibleRatio};
+  if(visibleRatio <= 0.28) return {risk:"ややあり", score:72, visibleRatio};
+  return {risk:"目立つ", score:42, visibleRatio};
+}
+
+function evaluateLayerOrientation(orientationIndex){
+  const geom = makeLayerGeometry(orientationIndex);
+  if(!geom) return null;
+
+  const pos = geom.attributes.position.array;
+  geom.computeBoundingBox();
+  const box = geom.boundingBox;
+  const size = new THREE.Vector3();
+  box.getSize(size);
+
+  const footprintArea = Math.max(0.001, size.x * size.z);
+  const height = Math.max(0.001, size.y);
+
+  // 接地面と高さのバランス：
+  // 接地している範囲の広さだけでなく、高さに対して安定しているかを見る。
+  const bottomTol = Math.max(0.12, height * 0.01);
+  const contactBox = new THREE.Box2();
+  let contactCount = 0;
+
+  for(let i=0;i<pos.length;i+=3){
+    const y = pos[i+1];
+    if(y <= bottomTol){
+      contactCount++;
+      contactBox.expandByPoint(new THREE.Vector2(pos[i], pos[i+2]));
+    }
+  }
+
+  let contactRatio = 0;
+  let contactShort = 0;
+  let contactLong = 0;
+
+  if(contactCount > 0 && contactBox.isEmpty() === false){
+    const cs = new THREE.Vector2();
+    contactBox.getSize(cs);
+    contactShort = Math.min(Math.abs(cs.x), Math.abs(cs.y));
+    contactLong = Math.max(Math.abs(cs.x), Math.abs(cs.y));
+    contactRatio = Math.min(1, (Math.max(0.001, cs.x * cs.y)) / footprintArea);
+  }
+
+  // 高さに対して接地面の短辺がどれだけあるか。薄い板が立つとここが低くなる。
+  const stabilityRatio = contactShort / height;
+  const areaHeightRatio = (contactLong * Math.max(0.001, contactShort)) / Math.max(1, height * height);
+
+  let balanceScore;
+  if(height <= 1.0 && contactRatio >= 0.20){
+    // 薄く寝ている平面は安定
+    balanceScore = 100;
+  }else if(stabilityRatio >= 0.55 && areaHeightRatio >= 0.20){
+    balanceScore = 100;
+  }else if(stabilityRatio >= 0.30 && areaHeightRatio >= 0.08){
+    balanceScore = 78;
+  }else if(stabilityRatio >= 0.14 && areaHeightRatio >= 0.025){
+    balanceScore = 55;
+  }else{
+    balanceScore = 25;
+  }
+
+  // サポート材：
+  // STLの面の向きが不安定なことがあるので、面の法線を形状中心から見て外向きに補正する。
+  // さらに、接地面付近の下向き面はベッドに支えられているので除外する。
+  const center = new THREE.Vector3();
+  box.getCenter(center);
+
+  const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
+  const centroid = new THREE.Vector3();
+  const outward = new THREE.Vector3();
+  const normal = new THREE.Vector3();
+  let totalArea = 0;
+  let overhangArea = 0;
+
+  for(let i=0;i<pos.length;i+=9){
+    a.set(pos[i],pos[i+1],pos[i+2]);
+    b.set(pos[i+3],pos[i+4],pos[i+5]);
+    c.set(pos[i+6],pos[i+7],pos[i+8]);
+
+    const area = triangleArea(a,b,c);
+    if(!Number.isFinite(area) || area <= 0) continue;
+
+    centroid.set(
+      (a.x+b.x+c.x)/3,
+      (a.y+b.y+c.y)/3,
+      (a.z+b.z+c.z)/3
+    );
+
+    normal.subVectors(b,a).cross(new THREE.Vector3().subVectors(c,a)).normalize();
+
+    // 中心から面中心への方向と逆なら、法線を反転して外向きに寄せる
+    outward.subVectors(centroid, center);
+    if(outward.lengthSq() > 1e-8 && normal.dot(outward) < 0){
+      normal.multiplyScalar(-1);
+    }
+
+    totalArea += area;
+
+    // 底面近くの面は接地している可能性が高いので、サポート材から除外
+    if(centroid.y <= bottomTol) continue;
+
+    // 下向き成分が強い面をサポート必要候補とする
+    if(normal.y < -0.707){
+      overhangArea += area;
+    }
+  }
+
+  const supportEstimate = estimateSupportCellsForLayerGeometry(geom);
+  const supportLabel = supportEstimate.label;
+  const supportScore = supportAmountScore(supportLabel);
+  const overhangRatio = supportEstimate.ratio;
+
+  // 細部表現：
+  // 1) 細すぎる・薄すぎる部分が再現しにくい
+  // 2) 上面や側面など目につきやすい部分にサポート材の痕跡が残ると見た目が落ちやすい
+  const fragile = analyzeSTLFragileParts(geom);
+  const scarRisk = estimateVisibleSupportScarRisk(geom, supportEstimate);
+
+  let detailScore = 100;
+  if(fragile.warning){
+    const issueCount = fragile.issues?.length || 1;
+    detailScore = issueCount >= 2 ? 25 : 45;
+  }
+
+  // サポート痕跡は、サポート材の量と組み合わせて評価する。
+  // サポート材が少なめなら、多少の痕跡だけで細部表現を×にしない。
+  // サポート材が多めなら、表面の荒れや取り外し痕を強く警戒する。
+  if(supportLabel === "多め"){
+    detailScore = Math.min(detailScore, scarRisk.risk === "目立つ" ? 60 : 70);
+  }else if(supportLabel === "少なめ"){
+    detailScore = Math.min(detailScore, scarRisk.risk === "目立つ" ? 82 : 92);
+  }else{
+    detailScore = Math.min(detailScore, scarRisk.risk === "目立つ" ? 82 : scarRisk.score);
+  }
+
+  // 極端に不安定な向きは細部表現も少し下がる
+  if(balanceScore < 55){
+    detailScore = Math.min(detailScore, 70);
+  }
+
+  const totalScore = Math.round(balanceScore*0.42 + supportScore*0.32 + detailScore*0.26);
+
+  const reason = `高さ${height.toFixed(1)}mm / 接地短辺${contactShort.toFixed(1)}mm / サポート材${supportLabel} / 痕跡${scarRisk.risk}`;
+
+  return {
+    orientationIndex,
+    geom,
+    size,
+    balanceScore,
+    supportScore,
+    supportLabel,
+    scarRisk,
+    detailScore,
+    totalScore,
+    marks:{
+      balance:layerScoreLabel(balanceScore),
+      support:supportLabel,
+      detail:layerScoreLabel(detailScore)
+    },
+    reason
+  };
+}
+
+let layerRenderers = [];
+let layerCameras = [];
+let layerControls = [];
+let layerScenes = [];
+let layerCards = [];
+let layerEvaluations = [];
+let layerSyncing = false;
+let layerAnimationId = null;
+
+function disposeLayerViews(){
+  if(layerAnimationId) cancelAnimationFrame(layerAnimationId);
+  layerAnimationId = null;
+
+  for(const r of layerRenderers){
+    try{ r.dispose(); }catch(e){}
+    try{ r.domElement.remove(); }catch(e){}
+  }
+  layerRenderers = [];
+  layerCameras = [];
+  layerControls = [];
+  layerScenes = [];
+  layerCards = [];
+  layerEvaluations = [];
+}
+
+function syncLayerViewFrom(sourceIndex){
+  if(layerSyncing) return;
+  const srcCam = layerCameras[sourceIndex];
+  const srcCtl = layerControls[sourceIndex];
+  if(!srcCam || !srcCtl) return;
+  layerSyncing = true;
+  for(let i=0;i<layerCameras.length;i++){
+    if(i===sourceIndex) continue;
+    layerCameras[i].position.copy(srcCam.position);
+    layerCameras[i].quaternion.copy(srcCam.quaternion);
+    layerCameras[i].zoom = srcCam.zoom;
+    layerCameras[i].updateProjectionMatrix();
+    layerControls[i].target.copy(srcCtl.target);
+    layerControls[i].update();
+  }
+  layerSyncing = false;
+}
+
+
+
+function selectLayerOrientation(index){
+  if(!LAYER_ORIENTATIONS[index]) return;
+  layerSelectedOrientationIndex = index;
+  layerCards.forEach((card,i)=>card?.classList.toggle("selected", i===index));
+}
+
+
+
+
+function estimateSupportCellsForLayerGeometry(geom){
+  const pos = geom?.attributes?.position?.array;
+  if(!pos || pos.length < 9) return {cells:[], ratio:0, label:"なし"};
+
+  geom.computeBoundingBox();
+  const box = geom.boundingBox;
+  const size = new THREE.Vector3();
+  box.getSize(size);
+
+  const minX = box.min.x;
+  const maxX = box.max.x;
+  const minZ = box.min.z;
+  const maxZ = box.max.z;
+  const groundY = 0;
+  const bottomTol = Math.max(0.12, size.y * 0.01);
+
+  // 細かすぎると表示がうるさく、粗すぎると内部サポートを拾い損ねる。
+  const gridStep = Math.max(1.4, Math.min(2.6, Math.max(size.x, size.z) / 26));
+  const maxCells = 1800;
+  const supportCells = [];
+
+  const a = new THREE.Vector3();
+  const b = new THREE.Vector3();
+  const c = new THREE.Vector3();
+
+  function pointInTriXZ(px,pz,a,b,c){
+    const v0x = c.x - a.x, v0z = c.z - a.z;
+    const v1x = b.x - a.x, v1z = b.z - a.z;
+    const v2x = px - a.x, v2z = pz - a.z;
+
+    const den = v0x * v1z - v1x * v0z;
+    if(Math.abs(den) < 1e-9) return null;
+
+    const u = (v2x * v1z - v1x * v2z) / den;
+    const v = (v0x * v2z - v2x * v0z) / den;
+
+    if(u >= -1e-6 && v >= -1e-6 && u + v <= 1 + 1e-6){
+      const y = a.y + u * (c.y - a.y) + v * (b.y - a.y);
+      return y;
+    }
+    return null;
+  }
+
+  function uniqueSortedYs(ys){
+    ys.sort((a,b)=>a-b);
+    const out = [];
+    for(const y of ys){
+      if(!Number.isFinite(y)) continue;
+      if(!out.length || Math.abs(out[out.length-1] - y) > 0.08){
+        out.push(y);
+      }
+    }
+    return out;
+  }
+
+  for(let x=minX + gridStep*0.5; x<=maxX; x+=gridStep){
+    for(let z=minZ + gridStep*0.5; z<=maxZ; z+=gridStep){
+      const ys = [];
+
+      // このXZ位置で、縦の線がSTL表面と交わる高さをすべて集める。
+      // これにより、外側だけでなく内部空洞の天井面も拾える。
+      for(let i=0;i<pos.length;i+=9){
+        a.set(pos[i],pos[i+1],pos[i+2]);
+        b.set(pos[i+3],pos[i+4],pos[i+5]);
+        c.set(pos[i+6],pos[i+7],pos[i+8]);
+
+        const y = pointInTriXZ(x,z,a,b,c);
+        if(y !== null) ys.push(y);
+      }
+
+      const sorted = uniqueSortedYs(ys);
+      if(sorted.length < 2) continue;
+
+      // 交点を下からペアにして「材料が存在する区間」とみなす。
+      // ある材料区間の下面が、グランドまたは下の材料から離れている場合、
+      // その空間にサポート材が必要と考える。
+      let previousTop = groundY;
+
+      for(let k=0; k+1<sorted.length; k+=2){
+        const yBottom = sorted[k];
+        const yTop = sorted[k+1];
+        if(yTop - yBottom < 0.12) continue;
+
+        const supportBase = Math.max(groundY, previousTop);
+        const gap = yBottom - supportBase;
+
+        // グランド上に直接ある材料はサポート不要。
+        // 内部空洞・張り出し・浮いた天井は、gapができるのでサポート候補になる。
+        if(yBottom > bottomTol && gap > 0.75){
+          supportCells.push({x,z,y0:supportBase,y1:yBottom});
+          if(supportCells.length >= maxCells) break;
+        }
+
+        previousTop = Math.max(previousTop, yTop);
+      }
+
+      if(supportCells.length >= maxCells) break;
+    }
+    if(supportCells.length >= maxCells) break;
+  }
+
+  const sampleX = Math.max(1, Math.ceil((maxX-minX) / gridStep));
+  const sampleZ = Math.max(1, Math.ceil((maxZ-minZ) / gridStep));
+  const sampleCount = sampleX * sampleZ;
+  const ratio = sampleCount > 0 ? supportCells.length / sampleCount : 0;
+  const label = supportAmountLabel(ratio);
+
+  return {cells:supportCells, ratio, label, gridStep};
+}
+
+function makeSupportMeshesForLayerGeometry(geom){
+  const estimate = estimateSupportCellsForLayerGeometry(geom);
+  const cells = estimate.cells || [];
+  if(!cells.length) return [];
+
+  const supportMat = new THREE.MeshPhongMaterial({
+    color:0xf97316,
+    transparent:true,
+    opacity:0.36,
+    shininess:15
+  });
+
+  const w = (estimate.gridStep || 2.0) * 0.82;
+  const supportMeshes = [];
+
+  for(const cell of cells){
+    const h = Math.max(0.2, cell.y1 - cell.y0);
+    const supportGeom = new THREE.BoxGeometry(w, h, w);
+    const support = new THREE.Mesh(supportGeom, supportMat);
+    support.position.set(cell.x, cell.y0 + h/2, cell.z);
+    supportMeshes.push(support);
+  }
+
+  return supportMeshes;
+}
+
+function createLayerScene(container, evaluation, index){
+  const scene2 = new THREE.Scene();
+  scene2.background = new THREE.Color(0xeef2f7);
+
+  const size = evaluation.size;
+  // ガチャポン画面での見え方に近づけるため、カメラ距離はSTLサイズに追従しすぎない。
+  // 積層方向画面ではガチャポン球が表示されないため、STLだけを画面いっぱいに拡大しない。
+  // 48mmガチャポン＋余白を含む「見えない表示枠」を想定して、固定基準を大きめにする。
+  const modelDim = Math.max(size.x, size.y, size.z, 1);
+  const isSixView = !!document.getElementById("layerGrid") && !document.getElementById("layerGrid").classList.contains("singleLayerMode");
+  // 6面表示では、各方向のモデル全体が必ずカード内に収まるよう、
+  // STLの最大寸法から表示枠を決める。ガチャポン判定時の倍率は使わない。
+  // V2.38: 6画面表示では、はみ出し防止のため表示枠を少し大きめに取る。
+  // これはカメラ表示だけの調整で、STLの実寸は変えない。
+  const viewBaseDim = isSixView ? Math.max(48, modelDim * 1.55) : Math.max(105, modelDim);
+  const maxDim = viewBaseDim;
+  const gridSize = Math.max(isSixView ? 64 : 120, Math.ceil(viewBaseDim/10)*20);
+  const groundGeom = new THREE.PlaneGeometry(gridSize, gridSize);
+  const groundMat = new THREE.MeshBasicMaterial({
+    color:0xd1d5db,
+    transparent:true,
+    opacity:0.72,
+    side:THREE.DoubleSide
+  });
+  const ground = new THREE.Mesh(groundGeom, groundMat);
+  ground.rotation.x = -Math.PI/2;
+  ground.position.y = -0.015;
+  scene2.add(ground);
+
+  const grid = new THREE.GridHelper(gridSize, Math.max(10, gridSize/5), 0x000000, 0x000000);
+  grid.material.opacity = 0.38;
+  grid.material.transparent = true;
+  grid.position.y = 0;
+  scene2.add(grid);
+
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x9ca3af, 1.0);
+  scene2.add(hemi);
+  const dir = new THREE.DirectionalLight(0xffffff, 0.85);
+  dir.position.set(40,60,35);
+  scene2.add(dir);
+
+  const mat = new THREE.MeshPhongMaterial({
+    color: 0xfacc15,
+    shininess:40,
+    transparent:true,
+    opacity:0.82
+  });
+  const mesh = new THREE.Mesh(evaluation.geom, mat);
+  scene2.add(mesh);
+
+  const supportMeshes = makeSupportMeshesForLayerGeometry(evaluation.geom);
+  for(const s of supportMeshes){
+    scene2.add(s);
+  }
+
+  const rect = container.getBoundingClientRect();
+  const w = Math.max(100, Math.floor(rect.width || container.clientWidth || 320));
+  const h = Math.max(100, Math.floor(rect.height || container.clientHeight || 220));
+  const cam = new THREE.PerspectiveCamera(35, w/h, 0.1, 5000);
+  const targetY = modelDim * 0.25;
+
+  if(isSixView){
+    // 6方向すべてが初期表示で枠内に収まるよう、カードの縦横比とFOVから距離を計算する。
+    const fovRad = THREE.MathUtils.degToRad(35);
+    const aspectSafe = Math.max(0.35, w / Math.max(1, h));
+    const sphereRadius = Math.max(modelDim * 0.82, evaluation.geom.boundingSphere?.radius || modelDim * 0.5);
+    const fitHeightDist = sphereRadius / Math.sin(fovRad / 2);
+    const fitWidthDist = sphereRadius / Math.sin(2 * Math.atan(Math.tan(fovRad / 2) * aspectSafe) / 2);
+    // 少し余白を多く取り、6画面それぞれで確実に収まるようにする。
+    const fitDist = Math.max(fitHeightDist, fitWidthDist) * 1.55;
+
+    const dirVec = new THREE.Vector3(0.92, 0.72, 1.18).normalize();
+    cam.position.set(dirVec.x * fitDist, targetY + dirVec.y * fitDist, dirVec.z * fitDist);
+  }else{
+    cam.position.set(viewBaseDim*1.55, viewBaseDim*1.25, viewBaseDim*1.75);
+  }
+  cam.lookAt(0, targetY, 0);
+
+  const renderer2 = new THREE.WebGLRenderer({antialias:true, alpha:false});
+  renderer2.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer2.setSize(w,h,false);
+  renderer2.domElement.style.display = "block";
+  renderer2.domElement.style.width = "100%";
+  renderer2.domElement.style.height = "100%";
+  renderer2.domElement.dataset.cssW = String(w);
+  renderer2.domElement.dataset.cssH = String(h);
+  container.appendChild(renderer2.domElement);
+
+  const ctl = new THREE.OrbitControls(cam, renderer2.domElement);
+  ctl.target.set(0, modelDim*0.25, 0);
+  ctl.minDistance = viewBaseDim * (isSixView ? 0.55 : 0.55);
+  ctl.maxDistance = viewBaseDim * 8.0;
+  ctl.enableDamping = true;
+  ctl.dampingFactor = 0.08;
+  ctl.addEventListener("change", ()=>syncLayerViewFrom(index));
+
+  scene2.userData.maxDim = maxDim;
+
+  layerScenes[index] = scene2;
+  layerCameras[index] = cam;
+  layerRenderers[index] = renderer2;
+  layerControls[index] = ctl;
+}
+
+function renderLayerLoop(){
+  layerAnimationId = requestAnimationFrame(renderLayerLoop);
+  for(let i=0;i<layerRenderers.length;i++){
+    const r = layerRenderers[i];
+    const cam = layerCameras[i];
+    const ctl = layerControls[i];
+    const sc = layerScenes[i];
+    if(!r || !cam || !sc) continue;
+    ctl?.update();
+    const card = layerCards[i];
+    const wrap = card?.querySelector(".layerCanvasWrap");
+    if(wrap){
+      const cardRect = card?.getBoundingClientRect?.();
+      const w = Math.max(100, wrap.clientWidth || Math.floor(cardRect?.width || 0));
+      const h = Math.max(100, wrap.clientHeight || Math.floor(cardRect?.height || 0));
+      const lastW = r.domElement.dataset.cssW ? Number(r.domElement.dataset.cssW) : 0;
+      const lastH = r.domElement.dataset.cssH ? Number(r.domElement.dataset.cssH) : 0;
+      if(Math.abs(lastW - w) > 1 || Math.abs(lastH - h) > 1){
+        r.setSize(w,h,false);
+        r.domElement.dataset.cssW = String(w);
+        r.domElement.dataset.cssH = String(h);
+        cam.aspect = w/h;
+        cam.updateProjectionMatrix();
+      }
+    }
+    r.render(sc, cam);
+  }
+}
+
+function metricHtml(label, mark){
+  return `<div class="layerMetric"><span>${label}：${mark}</span></div>`;
+}
+
+
+
+
+
+
+
+
+function strictLayerOverallMark(ev, allEvaluations){
+  if(!ev) return "×";
+
+  const valid = allEvaluations.filter(Boolean);
+  const heights = valid.map(e=>Math.max(0.001, e.size?.y || 9999));
+  const minHeight = Math.min(...heights);
+  const height = Math.max(0.001, ev.size?.y || 9999);
+  const heightRatio = height / Math.max(0.001, minHeight);
+
+  function supportPenalty(e){
+    if(e.supportLabel === "なし") return 0;
+    if(e.supportLabel === "少なめ") return 1;
+    return 2;
+  }
+
+  // 低く置ける候補を優先する。
+  const lowGroup = valid.filter(e=>{
+    const h = Math.max(0.001, e.size?.y || 9999);
+    return h / Math.max(0.001, minHeight) <= 1.28;
+  });
+
+  // 痕跡は補助的な評価に下げる。
+  // 細部表現が○で、サポート材が少なめなら、痕跡だけで判定△や×にしない。
+  let bestLow = null;
+  let bestLowScore = -Infinity;
+  for(const e of lowGroup){
+    const scarSmallPenalty =
+      e.scarRisk?.risk === "目立つ" ? 6 :
+      e.scarRisk?.risk === "ややあり" ? 3 : 0;
+
+    const s =
+      (e.balanceScore || 0) * 0.40 +
+      (e.detailScore || 0) * 0.36 -
+      supportPenalty(e) * 22 -
+      scarSmallPenalty -
+      Math.max(0, ((e.size?.y || 0) / Math.max(0.001, minHeight) - 1)) * 18;
+
+    if(s > bestLowScore){
+      bestLowScore = s;
+      bestLow = e;
+    }
+  }
+
+  const isBestLow = ev === bestLow;
+
+  // 明らかに高く立つ向きは×。
+  if(heightRatio >= 2.2) return "×";
+  if(heightRatio >= 1.55 && ev.supportLabel === "多め") return "×";
+
+  // サポート材が少なめで細部表現が○以上なら、判定○を許可する。
+  // 表面の形が見える向きはここで救う。
+  if(ev.supportLabel === "少なめ"){
+    if(heightRatio <= 1.28 && ev.balanceScore >= 70 && ev.detailScore >= 70) return "○";
+    if(isBestLow && ev.balanceScore >= 70 && ev.detailScore >= 60) return "○";
+    if(ev.balanceScore < 55 || ev.detailScore < 55) return "×";
+    return "△";
+  }
+
+  // サポート材が多めの場合は厳しめ。
+  // ただし「痕跡が少ない」だけで○にしない。細部表現が△なら判定も△以下。
+  if(ev.supportLabel === "多め"){
+    if(ev.detailScore < 55) return "×";
+    if(isBestLow && ev.balanceScore >= 70 && ev.detailScore >= 70) return "△";
+    return "×";
+  }
+
+  // サポートなしの場合。
+  if(ev.balanceScore < 45) return "×";
+  if(ev.balanceScore < 70) return "△";
+
+  if(ev.detailScore < 55) return "×";
+  if(ev.detailScore < 75) return "△";
+
+  if(heightRatio >= 1.25) return "△";
+
+  const score = ev.totalScore;
+  if(score >= 86) return "◎";
+  if(score >= 72) return "○";
+  if(score >= 55) return "△";
+  return "×";
+}
+
+function openLayerOrientationScreen(){
+  if(!objectData?.geom){
+    setResult("judging","STL読み込み","まずSTLファイルを読み込んでください。");
+    return;
+  }
+
+  disposeLayerViews();
+  const grid = document.getElementById("layerGrid");
+  if(!grid) return;
+  grid.innerHTML = "";
+  grid.classList.remove("singleLayerMode");
+
+  layerEvaluations = LAYER_ORIENTATIONS.map((_,i)=>evaluateLayerOrientation(i));
+
+  let bestIndex = 0;
+  let bestScore = -1;
+
+  // 最初の候補は、厳しめ判定評価で「○」を優先する。
+  // ○がなければ◎、それもなければ△、最後に最高点を選ぶ。
+  const firstCircle = layerEvaluations.findIndex(ev => ev && strictLayerOverallMark(ev, layerEvaluations) === "○");
+  const firstDoubleCircle = layerEvaluations.findIndex(ev => ev && strictLayerOverallMark(ev, layerEvaluations) === "◎");
+  const firstTriangle = layerEvaluations.findIndex(ev => ev && strictLayerOverallMark(ev, layerEvaluations) === "△");
+
+  if(firstCircle >= 0){
+    bestIndex = firstCircle;
+  }else if(firstDoubleCircle >= 0){
+    bestIndex = firstDoubleCircle;
+  }else if(firstTriangle >= 0){
+    bestIndex = firstTriangle;
+  }else{
+    layerEvaluations.forEach((ev,i)=>{
+      if(ev && ev.totalScore > bestScore){
+        bestScore = ev.totalScore;
+        bestIndex = i;
+      }
+    });
+  }
+
+  if(layerSelectedOrientationIndex === null || layerSelectedOrientationIndex === undefined){
+    layerSelectedOrientationIndex = bestIndex;
+  }
+
+  for(let i=0;i<LAYER_ORIENTATIONS.length;i++){
+    const ori = LAYER_ORIENTATIONS[i];
+    const ev = layerEvaluations[i];
+    const card = document.createElement("div");
+    card.className = "layerCard";
+    card.innerHTML = `
+      <div class="layerCanvasWrap"></div>
+      <div class="layerLabel">
+        <span>${ori.label}</span>
+        <button class="${layerTotalButtonClass(strictLayerOverallMark(ev, layerEvaluations))}" type="button" data-layer-total-index="${i}">判定${strictLayerOverallMark(ev, layerEvaluations)}</button>
+      </div>
+      <div class="layerMetrics">
+        ${metricHtml("接地面と高さ", ev.marks.balance)}
+        ${metricHtml("サポート材", ev.marks.support)}
+        ${metricHtml("細部表現", ev.marks.detail)}
+        <div class="layerReason">${ev.reason}</div>
+      </div>
+    `;
+    card.addEventListener("dblclick", ()=>openLayerConfirm(i));
+    card.querySelector("[data-layer-total-index]")?.addEventListener("click", (e)=>openLayerConfirmFromEvent(e, i));
+    grid.appendChild(card);
+    layerCards[i] = card;
+    createLayerScene(card.querySelector(".layerCanvasWrap"), ev, i);
+  }
+
+  document.body.classList.add("layer-screen-open");
+  layerCards.forEach(card=>card?.classList.remove("selected"));
+  if(typeof window.dispatchEvent === "function") window.dispatchEvent(new CustomEvent("layerScreenOpened"));
+  renderLayerLoop();
+}
+
+
+
+function renderSingleLayerOrientation(index){
+  const grid = document.getElementById("layerGrid");
+  if(!grid) return;
+
+  disposeLayerViews();
+  grid.innerHTML = "";
+  grid.classList.add("singleLayerMode");
+
+  if(!layerEvaluations || !layerEvaluations.length){
+    layerEvaluations = LAYER_ORIENTATIONS.map((_,i)=>evaluateLayerOrientation(i));
+  }
+
+  layerSelectedOrientationIndex = ((index % LAYER_ORIENTATIONS.length) + LAYER_ORIENTATIONS.length) % LAYER_ORIENTATIONS.length;
+
+  const ori = LAYER_ORIENTATIONS[layerSelectedOrientationIndex];
+  const ev = layerEvaluations[layerSelectedOrientationIndex];
+
+  const card = document.createElement("div");
+  card.className = "layerCard selected";
+  card.innerHTML = `
+    <div class="layerCanvasWrap"></div>
+    <div class="layerLabel">${ori.label}　判定 ${strictLayerOverallMark(ev, layerEvaluations)}</div>
+    <div class="layerMetrics">
+      ${metricHtml("接地面と高さ", ev.marks.balance)}
+      ${metricHtml("サポート材", ev.marks.support)}
+      ${metricHtml("細部表現", ev.marks.detail)}
+      <div class="layerReason">${ev.reason}</div>
+    </div>
+  `;
+  grid.appendChild(card);
+  layerCards[0] = card;
+  createLayerScene(card.querySelector(".layerCanvasWrap"), ev, 0);
+
+  const note = document.getElementById("layerSelectedNote");
+  if(note){
+    note.textContent = `選択中：${ori.label}　判定 ${strictLayerOverallMark(ev, layerEvaluations)}　${ev.reason}`;
+  }
+
+  renderLayerLoop();
+}
+
+function closeLayerOrientationScreen(){
+  closeLayerConfirm();
+  document.body.classList.remove("layer-screen-open");
+  document.getElementById("layerGrid")?.classList.remove("singleLayerMode");
+  if(typeof window.dispatchEvent === "function") window.dispatchEvent(new CustomEvent("layerScreenClosed"));
+  disposeLayerViews();
+}
+
+function applyLayerOrientationSelection(){
+  if(layerSelectedOrientationIndex === null || layerSelectedOrientationIndex === undefined){
+    selectLayerOrientation(0);
+  }
+  layerOrientationApplied = true;
+  const chosenIndex = layerSelectedOrientationIndex;
+  const ori = LAYER_ORIENTATIONS[chosenIndex];
+
+  // 提出用STL保存時は、この確定した方向を使う。
+  layerSelectedOrientationIndex = chosenIndex;
+
+  closeLayerOrientationScreen();
+  setResult("ok","積層方向を選びました",`${ori.label}の向きにSTL座標を変換して保存します。`);
+  window.dispatchEvent(new CustomEvent("layerOrientationApplied", {detail:{index:chosenIndex, orientation:ori}}));
+}
+
+
+
+function layerTotalButtonClass(mark){
+  if(mark === "◎" || mark === "○") return "layerTotalBtn";
+  if(mark === "△") return "layerTotalBtn mid";
+  return "layerTotalBtn ng";
+}
+
+function openLayerConfirmFromEvent(e, index){
+  e.preventDefault();
+  e.stopPropagation();
+  openLayerConfirm(index);
+}
+
+function openLayerConfirm(index){
+  if(!LAYER_ORIENTATIONS[index]) return;
+  selectLayerOrientation(index);
+  const ori = LAYER_ORIENTATIONS[index];
+  const text = document.getElementById("layerConfirmText");
+  const ev = layerEvaluations?.[index];
+  const mark = ev ? strictLayerOverallMark(ev, layerEvaluations) : "";
+  if(text) text.textContent = `${ori.label}（判定${mark}）の方向に出力しますか？`;
+  document.getElementById("layerConfirmDialog")?.classList.add("show");
+}
+
+function closeLayerConfirm(){
+  document.getElementById("layerConfirmDialog")?.classList.remove("show");
+}
+
+function confirmLayerOrientation(){
+  closeLayerConfirm();
+  applyLayerOrientationSelection();
+}
+
+function setupLayerOrientationUI(){
+  document.getElementById("layerConfirmYesBtn")?.addEventListener("click", confirmLayerOrientation);
+  document.getElementById("layerConfirmNoBtn")?.addEventListener("click", closeLayerConfirm);
+
+  window.addEventListener("keydown", (e)=>{
+    if(!document.body.classList.contains("layer-screen-open")) return;
+
+    const confirmOpen = document.getElementById("layerConfirmDialog")?.classList.contains("show");
+
+    if(confirmOpen){
+      if(e.key === "Enter"){
+        e.preventDefault();
+        confirmLayerOrientation();
+      }else if(e.key === "Escape"){
+        e.preventDefault();
+        closeLayerConfirm();
+      }
+      return;
+    }
+
+    if(e.key === "Escape"){
+      e.preventDefault();
+      closeLayerOrientationScreen();
+    }
+  });
+}
+
+if(document.readyState === "loading"){
+  document.addEventListener("DOMContentLoaded", setupLayerOrientationUI);
+}else{
+  setupLayerOrientationUI();
+}
+
+/* フローチャート後付け制御。既存の3D初期化やガチャポン表示処理には触れない。 */
+
+
+(function(){
+  /* フローチャート後付け制御。既存の3D初期化やガチャポン表示処理には触れない。 */
+  const flow = {
+    loaded:false,
+    sizeDone:false,
+    sizeOk:false,
+    layerDone:false
+  };
+
+  function $(id){ return document.getElementById(id); }
+
+  function setButtonState(btn, enabled, mode){
+    if(!btn) return;
+    btn.disabled = !enabled;
+    btn.classList.remove("flowReady","flowDone","flowCurrent");
+    if(!enabled) return;
+    if(mode) btn.classList.add(mode);
+  }
+
+  function isFitOk(){
+    const main = $("resultMain")?.textContent || "";
+    const cls = $("resultOverlay")?.className || "";
+    return cls.includes("ok") && main.includes("入ります");
+  }
+
+  function isLoaded(){
+    try{
+      return !!window.objectData || !!objectData;
+    }catch(e){
+      return flow.loaded;
+    }
+  }
+
+  function refreshFlow(){
+    flow.loaded = isLoaded();
+
+    if(isFitOk()){
+      flow.sizeDone = true;
+      flow.sizeOk = true;
+    }
+
+    const canLoad = true;
+    const canSize = flow.loaded;
+    const canLayer = flow.loaded && flow.sizeDone && flow.sizeOk;
+    const canSubmit = canLayer && flow.layerDone;
+
+    setButtonState($("flowLoadBtn"), canLoad, flow.loaded ? "flowDone" : "flowReady");
+    setButtonState($("flowSizeBtn"), canSize, flow.sizeOk ? "flowDone" : (flow.loaded ? "flowReady" : ""));
+    setButtonState($("flowLayerBtn"), canLayer, flow.layerDone ? "flowDone" : "flowReady");
+    setButtonState($("flowSubmitBtn"), canSubmit, "flowReady");
+
+    document.querySelectorAll(".flowRow").forEach(row=>row.classList.remove("flowActive"));
+    let active = "load";
+    if(document.body.classList.contains("layer-screen-open")){
+      active = "layer";
+    }else if(flow.loaded && !flow.sizeOk) active = "size";
+    else if(flow.loaded && flow.sizeOk && !flow.layerDone) active = "layer";
+    else if(flow.loaded && flow.sizeOk && flow.layerDone) active = "submit";
+    document.querySelector(`[data-flow-row="${active}"]`)?.classList.add("flowActive");
+  }
+
+  function showGuide(main, sub){
+    if(typeof setResult === "function"){
+      setResult("judging", main, sub || "");
+    }
+  }
+
+  function resetAfterNewSTL(){
+    flow.loaded = true;
+    flow.sizeDone = false;
+    flow.sizeOk = false;
+    flow.layerDone = false;
+    if(typeof layerOrientationApplied !== "undefined") layerOrientationApplied = false;
+    if(typeof layerSelectedOrientationIndex !== "undefined") layerSelectedOrientationIndex = null;
+    refreshFlow();
+  }
+
+  function setup(){
+    $("flowLoadBtn")?.addEventListener("click", ()=>{
+      if(document.body.classList.contains("layer-screen-open")){
+        backToSizeCheckScreenFromLayer();
+        return;
+      }
+      $("objectFile")?.click();
+    });
+
+    $("flowSizeBtn")?.addEventListener("click", ()=>{
+      if(document.body.classList.contains("layer-screen-open")){
+        backToSizeCheckScreenFromLayer();
+        return;
+      }
+
+      if(!isLoaded()){
+        showGuide("STL読み込み", "まずSTLファイルを読み込んでください。");
+        return;
+      }
+      flow.sizeDone = false;
+      flow.sizeOk = false;
+      flow.layerDone = false;
+      if(typeof layerOrientationApplied !== "undefined") layerOrientationApplied = false;
+      refreshFlow();
+      if(typeof judge === "function") judge();
+    });
+
+    $("flowLayerBtn")?.addEventListener("click", ()=>{
+      refreshFlow();
+      if(!flow.sizeOk){
+        showGuide("大きさ判定", "先に48mmガチャポンの大きさ判定を行ってください。");
+        return;
+      }
+      if(typeof openLayerOrientationScreen === "function"){
+        openLayerOrientationScreen();
+      }else{
+        showGuide("積層方向判定", "積層方向判定画面を開けません。");
+      }
+    });
+
+    window.addEventListener("layerOrientationApplied", ()=>{
+      flow.layerDone = true;
+      refreshFlow();
+    });
+    window.addEventListener("layerScreenOpened", refreshFlow);
+    window.addEventListener("layerScreenClosed", refreshFlow);
+    window.addEventListener("submitSaveReset", refreshFlow);
+
+
+    $("flowSubmitBtn")?.addEventListener("click", ()=>{
+      refreshFlow();
+      if(!isLoaded()){
+        showGuide("STL読み込み", "まずSTLファイルを読み込んでください。");
+        return;
+      }
+      if(!flow.sizeOk){
+        showGuide("大きさ判定", "先に48mmガチャポンの大きさ判定を行ってください。");
+        return;
+      }
+      if(!flow.layerDone){
+        showGuide("積層方向判定", "先にフローチャートの「積層方向判定」を押してください。");
+        return;
+      }
+      if(typeof openSubmitDialog === "function") openSubmitDialog();
+    });
+
+    $("submitSaveBtn")?.addEventListener("click", (e)=>{
+      refreshFlow();
+      if(!flow.layerDone){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        if(!isLoaded()){
+          showGuide("STL読み込み", "まずSTLファイルを読み込んでください。");
+        }else if(!flow.sizeOk){
+          showGuide("大きさ判定", "先に48mmガチャポンの大きさ判定を行ってください。");
+        }else{
+          showGuide("積層方向判定", "先にフローチャートの「積層方向判定」を押してください。");
+        }
+        refreshFlow();
+      }
+    }, true);
+
+    $("objectFile")?.addEventListener("change", ()=>{
+      setTimeout(resetAfterNewSTL, 250);
+      setTimeout(refreshFlow, 1200);
+    });
+
+    const result = $("resultOverlay");
+    if(result && window.MutationObserver){
+      const obs = new MutationObserver(()=>{
+        const main = $("resultMain")?.textContent || "";
+        const cls = $("resultOverlay")?.className || "";
+
+        if(cls.includes("ok") && main.includes("入ります")){
+          flow.sizeDone = true;
+          flow.sizeOk = true;
+        }else if(cls.includes("ng")){
+          flow.sizeDone = true;
+          flow.sizeOk = false;
+          flow.layerDone = false;
+        }else if(cls.includes("judging")){
+          const m = main || "";
+          if(m.includes("判定中") || m.includes("読み込み完了") || m.includes("倍率変更中")){
+            flow.sizeDone = false;
+            flow.sizeOk = false;
+            flow.layerDone = false;
+          }
+        }
+        refreshFlow();
+      });
+      obs.observe(result, {attributes:true, childList:true, subtree:true, characterData:true});
+    }
+
+    $("bottomScaleSlider")?.addEventListener("input", ()=>{
+      flow.sizeDone = false;
+      flow.sizeOk = false;
+      flow.layerDone = false;
+      if(typeof layerOrientationApplied !== "undefined") layerOrientationApplied = false;
+      refreshFlow();
+    });
+    $("scaleSlider")?.addEventListener("input", ()=>{
+      flow.sizeDone = false;
+      flow.sizeOk = false;
+      flow.layerDone = false;
+      if(typeof layerOrientationApplied !== "undefined") layerOrientationApplied = false;
+      refreshFlow();
+    });
+
+    refreshFlow();
+    setTimeout(refreshFlow, 500);
+    setTimeout(refreshFlow, 1500);
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", setup);
+  }else{
+    setup();
+  }
+})();
+
+
+
 </script>
 </body>
 </html>
