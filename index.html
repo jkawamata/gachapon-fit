@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>48mmガチャポンFIT　V2.41</title>
+<title>48mmガチャポンFIT　V2.44</title>
 <style>
 :root{
   --bg:#e7ebf4; --panel:#ffffff; --ink:#172033; --muted:#667085;
@@ -894,7 +894,7 @@ body.layer-screen-open #layerScreen{
 }
 
 
-/* V2.41: 6面表示の3D領域をカード全体に広げる */
+/* V2.44: 6面表示の3D領域をカード全体に広げる */
 #layerGrid:not(.singleLayerMode) .layerCanvasWrap{
   inset:0 !important;
 }
@@ -977,7 +977,7 @@ body.layer-screen-open #layerScreen{
 }
 
 
-/* V2.41: 積層方向選択時の黄色枠 */
+/* V2.44: 積層方向選択時の黄色枠 */
 body.layer-screen-open .layerCard.selected{
   border-color:#f59e0b !important;
   box-shadow:
@@ -1017,7 +1017,7 @@ body.layer-screen-open .layerCard.selected::after{
 }
 
 
-/* V2.41: 現在位置は文字ではなく、赤い太めの矢印グラフィックで表示 */
+/* V2.44: 現在位置は文字ではなく、赤い太めの矢印グラフィックで表示 */
 .flowNowArrow{
   position:relative;
   width:34px;
@@ -1058,7 +1058,7 @@ body.layer-screen-open .layerCard.selected::after{
 }
 
 
-/* V2.41: 積層方向判定画面でも右端にフローチャートを表示 */
+/* V2.44: 積層方向判定画面でも右端にフローチャートを表示 */
 body.layer-screen-open #flowPanel{
   display:block !important;
   z-index:140 !important;
@@ -1078,7 +1078,7 @@ body.layer-screen-open #layerGrid{
 }
 
 
-/* V2.41: 積層方向画面ではフローチャートを右上角へ寄せる */
+/* V2.44: 積層方向画面ではフローチャートを右上角へ寄せる */
 body.layer-screen-open #flowPanel{
   display:block !important;
   z-index:140 !important;
@@ -1100,7 +1100,7 @@ body.layer-screen-open #layerGrid{
 }
 
 
-/* V2.41: 現在位置は赤い点滅丸で表示 */
+/* V2.44: 現在位置は赤い点滅丸で表示 */
 .flowNowArrow{
   position:relative !important;
   width:24px !important;
@@ -1143,7 +1143,7 @@ body.layer-screen-open #layerGrid{
 }
 
 
-/* V2.41: フローチャートを右上端に寄せる */
+/* V2.44: フローチャートを右上端に寄せる */
 #flowPanel{
   top:8px !important;
   right:6px !important;
@@ -1154,7 +1154,7 @@ body.layer-screen-open #flowPanel{
 }
 
 
-/* V2.41: フローチャートの↓を処理ボックスの中央に合わせる */
+/* V2.44: フローチャートの↓を処理ボックスの中央に合わせる */
 #flowPanel .flowArrow{
   width:auto !important;
   margin:2px 0 2px 34px !important; /* 左の赤丸スペース分だけずらす */
@@ -1171,7 +1171,7 @@ body.layer-screen-open #flowPanel{
 }
 
 
-/* V2.41: ボタン押下フィードバックと積層方向計算中表示 */
+/* V2.44: ボタン押下フィードバックと積層方向計算中表示 */
 button.pressedFeedback,
 .flowStep.pressedFeedback{
   background:#dc2626 !important;
@@ -1219,6 +1219,30 @@ button.processingLock,
   to{opacity:1; transform:scale(1.02);}
 }
 
+
+.settingsSectionTitle{
+  margin:18px 0 8px;
+  padding:10px 12px;
+  border-radius:14px;
+  background:#eef6ff;
+  border:1px solid #bfdbfe;
+  color:#1e3a8a;
+  font-weight:900;
+  font-size:16px;
+}
+.settingsSectionTitle.stlProblem{
+  background:#fff7ed;
+  border-color:#fed7aa;
+  color:#9a3412;
+}
+.settingsSectionNote{
+  margin:-2px 0 12px;
+  padding:0 4px;
+  color:#64748b;
+  font-size:13px;
+  line-height:1.55;
+}
+
 </style>
 </head>
 <body>
@@ -1232,7 +1256,7 @@ button.processingLock,
       <button id="settingsBtn" class="light">設定変更</button>
     </div>
     <div class="titleBox">
-      <h1>48mmガチャポンFIT　V2.41</h1>
+      <h1>48mmガチャポンFIT　V2.44</h1>
       <div class="sub"></div>
     </div>
     <div class="rightTopGroup">
@@ -1328,7 +1352,7 @@ button.processingLock,
 
 
   <div id="layerScreen" aria-label="積層方向判定画面">
-    <div id="layerAppTitle">48mmガチャポンFIT　V2.41</div>
+    <div id="layerAppTitle">48mmガチャポンFIT　V2.44</div>
     <div id="layerHeader">
       <div>
         <div id="layerTitle">積層方向判定</div>
@@ -1382,6 +1406,9 @@ button.processingLock,
 
     <div class="card">
       <h2>判定設定</h2>
+      <div class="settingsSectionTitle">ガチャ玉に入るか判定</div>
+      <div class="settingsSectionNote">ガチャ玉の内側に、作品が入るかどうかを調べるための設定です。</div>
+
       <label>安全余裕 mm</label>
       <input id="margin" type="number" value="0.4" step="0.1" min="0" max="5">
 
@@ -1423,7 +1450,23 @@ button.processingLock,
         <option value="2">2mm間隔：重い</option>
       </select>
 
-      <label>分かれているSTL</label>
+      <label>判定の最大時間</label>
+      <select id="timeLimit">
+        <option value="5000">5秒以内</option>
+        <option value="10000" selected>10秒以内：標準</option>
+        <option value="15000">15秒以内</option>
+      </select>
+
+      <label>重いSTLの自動軽量化</label>
+      <select id="autoLight">
+        <option value="on" selected>する：時間優先</option>
+        <option value="off">しない：設定した点数を使う</option>
+      </select>
+
+      <div class="settingsSectionTitle stlProblem">STL自体の問題判定</div>
+      <div class="settingsSectionNote">ガチャ玉に入るかどうかとは別に、3Dプリント時に問題になりやすいSTL自体の状態を確認します。</div>
+
+      <label>分離しているSTL</label>
       <select id="allowSplitSTL">
         <option value="no" selected>許容しない：提出不可にする</option>
         <option value="yes">許容する：大きさ判定に進む</option>
@@ -1441,33 +1484,7 @@ button.processingLock,
         0にすると、この判定をしません。初期値は直径1.0mm相当です。
       </div>
 
-      <label>判定中の回転演出</label>
-      <select id="spinTime">
-        <option value="0">なし</option>
-        <option value="1000">短め：約1秒</option>
-        <option value="1800">約1.8秒</option>
-        <option value="3000" selected>入る時：約3秒</option>
-      </select>
 
-      <label>入らない時の回転演出</label>
-      <select id="failSpinTime">
-        <option value="0">なし</option>
-        <option value="5000">約5秒</option>
-        <option value="10000" selected>約10秒：標準</option>
-      </select>
-
-      <label>判定の最大時間</label>
-      <select id="timeLimit">
-        <option value="5000">5秒以内</option>
-        <option value="10000" selected>10秒以内：標準</option>
-        <option value="15000">15秒以内</option>
-      </select>
-
-      <label>重いSTLの自動軽量化</label>
-      <select id="autoLight">
-        <option value="on" selected>する：時間優先</option>
-        <option value="off">しない：設定した点数を使う</option>
-      </select>
 
       <label>読み込むSTLの上方向</label>
       <select id="objectUpAxis">
@@ -1652,7 +1669,7 @@ function setResult(kind, main, sub){
   document.getElementById("resultSub").innerHTML=String(sub || "").replace(/\\n/g,"<br>").replace(/\n/g,"<br>");
 
   if(kind==="ok" && String(main||"").includes("入ります")){
-    // V2.41: 薄すぎ・細すぎの判定は、現在の倍率で「入ります」と表示される時に行う。
+    // V2.44: 薄すぎ・細すぎの判定は、現在の倍率で「入ります」と表示される時に行う。
     // 読み込み時点で小さくても、その後に拡大して入る場合があるため、ここで最終確認する。
     if(objectData?.geom && !suppressFragileCheckOnOkDisplay){
       recomputeFragileCheckForDisplayedSTL();
@@ -1697,7 +1714,7 @@ function showScalePrompt(text){
   if(textEl && text) textEl.textContent=text;
   if(prompt) prompt.style.display="block";
 
-  // V2.41: 「STLを自動で拡大しますか？」などの確認中は、
+  // V2.44: 「STLを自動で拡大しますか？」などの確認中は、
   // 目で確認しやすいようにSTLを動かさない。
   stopPromptSpin();
   isJudgingSpin=false;
@@ -1778,7 +1795,7 @@ function animate(){
     objectMesh.rotation.x=spinBaseRotation.x + t*0.0072 + Math.sin(t*0.0028)*0.48;
     objectMesh.rotation.y=spinBaseRotation.y + t*0.0090;
     objectMesh.rotation.z=spinBaseRotation.z + Math.sin(t*0.0036)*0.72;
-    const phase = spinMinVisibleMs >= 3000 ? "主要な向きを確認しています。" : "内部に入る向きと位置を探索しています。";
+    const phase = "内部に入る向きと位置を探索しています。";
     if(now - lastJudgingOverlayUpdate > 220){
       lastJudgingOverlayUpdate = now;
       const progressBox = document.getElementById("progressBox");
@@ -2616,7 +2633,7 @@ function translationCandidates(step){
 }
 
 function previewJudgingPose(rx, ry, rz, t=null){
-  // V2.41: 主要姿勢を1つずつ表示するとカクカクして見えるため、
+  // V2.44: 主要姿勢を1つずつ表示するとカクカクして見えるため、
   // 判定中は連続回転アニメーションに統一する。
   // この関数は互換性のため残すが、表示姿勢は強制変更しない。
   if(!objectMesh) return;
@@ -3565,8 +3582,8 @@ async function judge(){
   let angleStep=Number(document.getElementById("angleStep").value);
   let tStep=Number(document.getElementById("translationStep").value);
   let maxN=Number(document.getElementById("sampleCount").value);
-  const spinMs=Number(document.getElementById("spinTime").value)||0;
-  const failSpinMs=Number(document.getElementById("failSpinTime").value)||0;
+  // V2.44: 回転演出時間の設定は廃止。
+  // アニメーションは実際の判定処理中だけ動かす。
   const timeLimit=Number(document.getElementById("timeLimit").value)||10000;
   const autoLight=document.getElementById("autoLight").value==="on";
 
@@ -3598,8 +3615,6 @@ async function judge(){
 安全余裕：${document.getElementById("margin").value}mm
 肉厚補正：${document.getElementById("wallThickness").value}mm
 最大時間：${timeLimit/1000}秒
-入る時の回転演出：${spinMs/1000}秒
-入らない時の回転演出：${failSpinMs/1000}秒
 自動軽量化：${autoLight ? "あり" : "なし"}`);
 
   setResult("judging","判定中…","内部に入る向きと位置を探索しています。");
@@ -3612,9 +3627,9 @@ async function judge(){
   bestPose=null;
 
   const start=performance.now();
-  // 主要な向きを確認していることが見えるように、短時間で判定できても最低3秒はアニメーションを見せる。
-  // 判定が長い場合も、処理中はできるだけ回転表示を続ける。
-  startSpin(Math.max(spinMs, failSpinMs, timeLimit, 3000), 3000);
+  // V2.44: 見せるためだけの待ち時間は使わない。
+  // アニメーションは実際の判定処理中だけ表示する。
+  startSpin(timeLimit, 0);
 
   let tried=0, tested=0;
   const total=angles.length**3;
@@ -3628,11 +3643,9 @@ async function judge(){
       for(const rz of angles){
         tried++;
 
-        // 主要な向きを確認中は、実際に試している向きにSTL表示も合わせる。
-        // 表示更新は間引き、判定処理が重くなりすぎないようにする。
-        if(tried <= 80 && tried % 1 === 0){
-          await sleep(20);
-        }else if(tried % 12 === 0){
+        // V2.44: 見せるためだけの待機はしない。
+        // UI更新のために時々だけ処理を譲る。
+        if(tried % 8 === 0){
           await sleep(0);
         }
 
@@ -3657,8 +3670,6 @@ async function judge(){
             }
 
             bestPose=refinePoseForBetterDisplay({rx,ry,rz,t:t.clone()});
-            const rest=Math.max(0, spinMs-(performance.now()-start));
-            if(rest>0) await sleep(rest);
             await stopSpin();
             suppressFragileCheckOnOkDisplay = true;
             if(hasAdjustedModel){
@@ -3796,12 +3807,8 @@ async function judge(){
     }
   }
 
-  // 入らなかった場合も、設定時間までは裏で探索しているように回転表示を続ける
-  const failRest=Math.max(0, failSpinMs-(performance.now()-start));
-  if(failRest>0){
-    setResult("judging","判定中…","最後まで入る向きと位置を確認しています。");
-    await sleep(failRest);
-  }
+  // V2.44: 入らない場合も、演出のためだけには待たない。
+  // 判定が終わったらすぐに赤表示へ移る。
   await stopSpin();
 
   bestPose=minPose;
@@ -4077,7 +4084,7 @@ function makeLayerGeometry(orientationIndex){
   const ori = LAYER_ORIENTATIONS[orientationIndex];
   const geom = objectData.geom.clone();
 
-  // V2.41: 積層方向判定では立体の実寸は変えない。
+  // V2.44: 積層方向判定では立体の実寸は変えない。
   // 見やすさのための拡大縮小はカメラ側だけで行う。
   geom.applyMatrix4(layerOrientationMatrix(ori));
   geom.computeBoundingBox();
@@ -4550,7 +4557,7 @@ function createLayerScene(container, evaluation, index){
   const isSixView = !!document.getElementById("layerGrid") && !document.getElementById("layerGrid").classList.contains("singleLayerMode");
   // 6面表示では、各方向のモデル全体が必ずカード内に収まるよう、
   // STLの最大寸法から表示枠を決める。ガチャポン判定時の倍率は使わない。
-  // V2.41: 6画面表示では、はみ出し防止のため表示枠を少し大きめに取る。
+  // V2.44: 6画面表示では、はみ出し防止のため表示枠を少し大きめに取る。
   // これはカメラ表示だけの調整で、STLの実寸は変えない。
   const viewBaseDim = isSixView ? Math.max(48, modelDim * 1.55) : Math.max(105, modelDim);
   const maxDim = viewBaseDim;
