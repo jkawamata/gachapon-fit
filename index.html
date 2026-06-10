@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>48mmガチャポンFIT　V2.38</title>
+<title>48mmガチャポンFIT　V2.41</title>
 <style>
 :root{
   --bg:#e7ebf4; --panel:#ffffff; --ink:#172033; --muted:#667085;
@@ -894,7 +894,7 @@ body.layer-screen-open #layerScreen{
 }
 
 
-/* V2.38: 6面表示の3D領域をカード全体に広げる */
+/* V2.41: 6面表示の3D領域をカード全体に広げる */
 #layerGrid:not(.singleLayerMode) .layerCanvasWrap{
   inset:0 !important;
 }
@@ -977,7 +977,7 @@ body.layer-screen-open #layerScreen{
 }
 
 
-/* V2.38: 積層方向選択時の黄色枠 */
+/* V2.41: 積層方向選択時の黄色枠 */
 body.layer-screen-open .layerCard.selected{
   border-color:#f59e0b !important;
   box-shadow:
@@ -1017,7 +1017,7 @@ body.layer-screen-open .layerCard.selected::after{
 }
 
 
-/* V2.38: 現在位置は文字ではなく、赤い太めの矢印グラフィックで表示 */
+/* V2.41: 現在位置は文字ではなく、赤い太めの矢印グラフィックで表示 */
 .flowNowArrow{
   position:relative;
   width:34px;
@@ -1058,7 +1058,7 @@ body.layer-screen-open .layerCard.selected::after{
 }
 
 
-/* V2.38: 積層方向判定画面でも右端にフローチャートを表示 */
+/* V2.41: 積層方向判定画面でも右端にフローチャートを表示 */
 body.layer-screen-open #flowPanel{
   display:block !important;
   z-index:140 !important;
@@ -1078,7 +1078,7 @@ body.layer-screen-open #layerGrid{
 }
 
 
-/* V2.38: 積層方向画面ではフローチャートを右上角へ寄せる */
+/* V2.41: 積層方向画面ではフローチャートを右上角へ寄せる */
 body.layer-screen-open #flowPanel{
   display:block !important;
   z-index:140 !important;
@@ -1100,7 +1100,7 @@ body.layer-screen-open #layerGrid{
 }
 
 
-/* V2.38: 現在位置は赤い点滅丸で表示 */
+/* V2.41: 現在位置は赤い点滅丸で表示 */
 .flowNowArrow{
   position:relative !important;
   width:24px !important;
@@ -1143,7 +1143,7 @@ body.layer-screen-open #layerGrid{
 }
 
 
-/* V2.38: フローチャートを右上端に寄せる */
+/* V2.41: フローチャートを右上端に寄せる */
 #flowPanel{
   top:8px !important;
   right:6px !important;
@@ -1154,7 +1154,7 @@ body.layer-screen-open #flowPanel{
 }
 
 
-/* V2.38: フローチャートの↓を処理ボックスの中央に合わせる */
+/* V2.41: フローチャートの↓を処理ボックスの中央に合わせる */
 #flowPanel .flowArrow{
   width:auto !important;
   margin:2px 0 2px 34px !important; /* 左の赤丸スペース分だけずらす */
@@ -1170,6 +1170,55 @@ body.layer-screen-open #flowPanel{
   width:100%;
 }
 
+
+/* V2.41: ボタン押下フィードバックと積層方向計算中表示 */
+button.pressedFeedback,
+.flowStep.pressedFeedback{
+  background:#dc2626 !important;
+  border-color:#991b1b !important;
+  color:#ffffff !important;
+  box-shadow:
+    0 0 0 4px rgba(220,38,38,.22),
+    0 6px 18px rgba(220,38,38,.32) !important;
+  transform:translateY(1px);
+}
+button.processingLock,
+.flowStep.processingLock{
+  opacity:.72;
+  cursor:wait !important;
+}
+
+#layerComputeOverlay{
+  position:fixed;
+  inset:0;
+  z-index:300;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  pointer-events:auto;
+  background:rgba(15,23,42,.18);
+}
+#layerComputeOverlay.show{
+  display:flex;
+}
+#layerComputeMessage{
+  padding:22px 28px;
+  border-radius:24px;
+  background:rgba(255,255,255,.96);
+  border:3px solid rgba(220,38,38,.72);
+  box-shadow:0 18px 48px rgba(15,23,42,.28);
+  color:#b91c1c;
+  font-size:26px;
+  font-weight:1000;
+  line-height:1.45;
+  text-align:center;
+  animation:layerComputeBlink .75s ease-in-out infinite alternate;
+}
+@keyframes layerComputeBlink{
+  from{opacity:.45; transform:scale(.985);}
+  to{opacity:1; transform:scale(1.02);}
+}
+
 </style>
 </head>
 <body>
@@ -1183,7 +1232,7 @@ body.layer-screen-open #flowPanel{
       <button id="settingsBtn" class="light">設定変更</button>
     </div>
     <div class="titleBox">
-      <h1>48mmガチャポンFIT　V2.38</h1>
+      <h1>48mmガチャポンFIT　V2.41</h1>
       <div class="sub"></div>
     </div>
     <div class="rightTopGroup">
@@ -1279,7 +1328,7 @@ body.layer-screen-open #flowPanel{
 
 
   <div id="layerScreen" aria-label="積層方向判定画面">
-    <div id="layerAppTitle">48mmガチャポンFIT　V2.38</div>
+    <div id="layerAppTitle">48mmガチャポンFIT　V2.41</div>
     <div id="layerHeader">
       <div>
         <div id="layerTitle">積層方向判定</div>
@@ -1603,7 +1652,7 @@ function setResult(kind, main, sub){
   document.getElementById("resultSub").innerHTML=String(sub || "").replace(/\\n/g,"<br>").replace(/\n/g,"<br>");
 
   if(kind==="ok" && String(main||"").includes("入ります")){
-    // V2.38: 薄すぎ・細すぎの判定は、現在の倍率で「入ります」と表示される時に行う。
+    // V2.41: 薄すぎ・細すぎの判定は、現在の倍率で「入ります」と表示される時に行う。
     // 読み込み時点で小さくても、その後に拡大して入る場合があるため、ここで最終確認する。
     if(objectData?.geom && !suppressFragileCheckOnOkDisplay){
       recomputeFragileCheckForDisplayedSTL();
@@ -1648,12 +1697,11 @@ function showScalePrompt(text){
   if(textEl && text) textEl.textContent=text;
   if(prompt) prompt.style.display="block";
 
-  // 大きさ判定×で赤表示している時は、はみ出し状態を目で確認できるように動かさない。
-  if(lastFitStatus !== "ng"){
-    startPromptSpin();
-  }else{
-    stopPromptSpin();
-  }
+  // V2.41: 「STLを自動で拡大しますか？」などの確認中は、
+  // 目で確認しやすいようにSTLを動かさない。
+  stopPromptSpin();
+  isJudgingSpin=false;
+  isPosePreviewDuringJudge=false;
 }
 function showProgress(label, percent, cancellable=false){
   if(lastFitStatus !== "ng") startPromptSpin();
@@ -1745,12 +1793,17 @@ function animate(){
       }
     }
   }else if(isPromptSpin && objectMesh){
-    const now=performance.now();
-    const t=now-promptSpinStartTime;
-    // 確認・待機画面でも、止まって見えないように全方向へゆっくり連続回転する。
-    objectMesh.rotation.y = promptSpinBaseRotation.y + t*0.0045;
-    objectMesh.rotation.x = promptSpinBaseRotation.x + Math.sin(t*0.0022) * 0.34;
-    objectMesh.rotation.z = promptSpinBaseRotation.z + Math.sin(t*0.0026) * 0.28;
+    const scalePrompt = document.getElementById("scalePrompt");
+    if(scalePrompt && scalePrompt.style.display !== "none"){
+      stopPromptSpin();
+    }else{
+      const now=performance.now();
+      const t=now-promptSpinStartTime;
+      // 待機画面でも、止まって見えないように全方向へゆっくり連続回転する。
+      objectMesh.rotation.y = promptSpinBaseRotation.y + t*0.0045;
+      objectMesh.rotation.x = promptSpinBaseRotation.x + Math.sin(t*0.0022) * 0.34;
+      objectMesh.rotation.z = promptSpinBaseRotation.z + Math.sin(t*0.0026) * 0.28;
+    }
   }
   controls.update();
   renderer.render(scene,camera);
@@ -2563,7 +2616,7 @@ function translationCandidates(step){
 }
 
 function previewJudgingPose(rx, ry, rz, t=null){
-  // V2.38: 主要姿勢を1つずつ表示するとカクカクして見えるため、
+  // V2.41: 主要姿勢を1つずつ表示するとカクカクして見えるため、
   // 判定中は連続回転アニメーションに統一する。
   // この関数は互換性のため残すが、表示姿勢は強制変更しない。
   if(!objectMesh) return;
@@ -3977,6 +4030,34 @@ let layerSelectedOrientationIndex = null;
 let layerOrientationApplied = false;
 let layerViewState = null;
 
+
+let isLayerComputing = false;
+
+function showButtonPressedFeedback(btn, hold=false){
+  if(!btn) return;
+  btn.classList.add("pressedFeedback");
+  if(hold){
+    btn.classList.add("processingLock");
+  }else{
+    setTimeout(()=>btn.classList.remove("pressedFeedback"), 260);
+  }
+}
+
+function clearButtonPressedFeedback(btn){
+  if(!btn) return;
+  btn.classList.remove("pressedFeedback","processingLock");
+}
+
+function showLayerComputeOverlay(){
+  const ov = document.getElementById("layerComputeOverlay");
+  if(ov) ov.classList.add("show");
+}
+
+function hideLayerComputeOverlay(){
+  const ov = document.getElementById("layerComputeOverlay");
+  if(ov) ov.classList.remove("show");
+}
+
 const LAYER_ORIENTATIONS = [
   {id:"Y+", label:"表面を上", short:"表面", rx:0, ry:0, rz:0},
   {id:"Y-", label:"裏面を上", short:"裏面", rx:Math.PI, ry:0, rz:0},
@@ -3996,7 +4077,7 @@ function makeLayerGeometry(orientationIndex){
   const ori = LAYER_ORIENTATIONS[orientationIndex];
   const geom = objectData.geom.clone();
 
-  // V2.38: 積層方向判定では立体の実寸は変えない。
+  // V2.41: 積層方向判定では立体の実寸は変えない。
   // 見やすさのための拡大縮小はカメラ側だけで行う。
   geom.applyMatrix4(layerOrientationMatrix(ori));
   geom.computeBoundingBox();
@@ -4469,7 +4550,7 @@ function createLayerScene(container, evaluation, index){
   const isSixView = !!document.getElementById("layerGrid") && !document.getElementById("layerGrid").classList.contains("singleLayerMode");
   // 6面表示では、各方向のモデル全体が必ずカード内に収まるよう、
   // STLの最大寸法から表示枠を決める。ガチャポン判定時の倍率は使わない。
-  // V2.38: 6画面表示では、はみ出し防止のため表示枠を少し大きめに取る。
+  // V2.41: 6画面表示では、はみ出し防止のため表示枠を少し大きめに取る。
   // これはカメラ表示だけの調整で、STLの実寸は変えない。
   const viewBaseDim = isSixView ? Math.max(48, modelDim * 1.55) : Math.max(105, modelDim);
   const maxDim = viewBaseDim;
@@ -4601,6 +4682,7 @@ function metricHtml(label, mark){
 
 
 
+
 function strictLayerOverallMark(ev, allEvaluations){
   if(!ev) return "×";
 
@@ -4616,74 +4698,107 @@ function strictLayerOverallMark(ev, allEvaluations){
     return 2;
   }
 
-  // 低く置ける候補を優先する。
-  const lowGroup = valid.filter(e=>{
+  function scarSmallPenalty(e){
+    return e.scarRisk?.risk === "目立つ" ? 6 :
+           e.scarRisk?.risk === "ややあり" ? 3 : 0;
+  }
+
+  function baseMark(e){
     const h = Math.max(0.001, e.size?.y || 9999);
-    return h / Math.max(0.001, minHeight) <= 1.28;
-  });
+    const hRatio = h / Math.max(0.001, minHeight);
 
-  // 痕跡は補助的な評価に下げる。
-  // 細部表現が○で、サポート材が少なめなら、痕跡だけで判定△や×にしない。
-  let bestLow = null;
-  let bestLowScore = -Infinity;
-  for(const e of lowGroup){
-    const scarSmallPenalty =
-      e.scarRisk?.risk === "目立つ" ? 6 :
-      e.scarRisk?.risk === "ややあり" ? 3 : 0;
+    if(hRatio >= 2.2) return "×";
+    if(hRatio >= 1.55 && e.supportLabel === "多め") return "×";
 
-    const s =
-      (e.balanceScore || 0) * 0.40 +
-      (e.detailScore || 0) * 0.36 -
-      supportPenalty(e) * 22 -
-      scarSmallPenalty -
-      Math.max(0, ((e.size?.y || 0) / Math.max(0.001, minHeight) - 1)) * 18;
-
-    if(s > bestLowScore){
-      bestLowScore = s;
-      bestLow = e;
+    if(e.supportLabel === "少なめ"){
+      if(hRatio <= 1.28 && e.balanceScore >= 70 && e.detailScore >= 70) return "○";
+      if(e.balanceScore < 55 || e.detailScore < 55) return "×";
+      return "△";
     }
-  }
 
-  const isBestLow = ev === bestLow;
+    if(e.supportLabel === "多め"){
+      if(e.detailScore < 55) return "×";
+      return "×";
+    }
 
-  // 明らかに高く立つ向きは×。
-  if(heightRatio >= 2.2) return "×";
-  if(heightRatio >= 1.55 && ev.supportLabel === "多め") return "×";
+    if(e.balanceScore < 45) return "×";
+    if(e.balanceScore < 70) return "△";
+    if(e.detailScore < 55) return "×";
+    if(e.detailScore < 75) return "△";
+    if(hRatio >= 1.25) return "△";
 
-  // サポート材が少なめで細部表現が○以上なら、判定○を許可する。
-  // 表面の形が見える向きはここで救う。
-  if(ev.supportLabel === "少なめ"){
-    if(heightRatio <= 1.28 && ev.balanceScore >= 70 && ev.detailScore >= 70) return "○";
-    if(isBestLow && ev.balanceScore >= 70 && ev.detailScore >= 60) return "○";
-    if(ev.balanceScore < 55 || ev.detailScore < 55) return "×";
-    return "△";
-  }
-
-  // サポート材が多めの場合は厳しめ。
-  // ただし「痕跡が少ない」だけで○にしない。細部表現が△なら判定も△以下。
-  if(ev.supportLabel === "多め"){
-    if(ev.detailScore < 55) return "×";
-    if(isBestLow && ev.balanceScore >= 70 && ev.detailScore >= 70) return "△";
+    const score = e.totalScore;
+    if(score >= 86) return "◎";
+    if(score >= 72) return "○";
+    if(score >= 55) return "△";
     return "×";
   }
 
-  // サポートなしの場合。
-  if(ev.balanceScore < 45) return "×";
-  if(ev.balanceScore < 70) return "△";
+  const rawMark = baseMark(ev);
 
-  if(ev.detailScore < 55) return "×";
-  if(ev.detailScore < 75) return "△";
+  // 通常はそのまま返す。
+  if(rawMark !== "×") return rawMark;
 
-  if(heightRatio >= 1.25) return "△";
+  // 6方向すべてが×になる場合だけ、比較上いちばん積層しやすい候補を△として残す。
+  const rawMarks = valid.map(e => baseMark(e));
+  const allNg = rawMarks.length > 0 && rawMarks.every(m => m === "×");
+  if(!allNg) return "×";
 
-  const score = ev.totalScore;
-  if(score >= 86) return "◎";
-  if(score >= 72) return "○";
-  if(score >= 55) return "△";
+  let best = null;
+  let bestScore = -Infinity;
+
+  for(const e of valid){
+    const h = Math.max(0.001, e.size?.y || 9999);
+    const hRatio = h / Math.max(0.001, minHeight);
+
+    // 低く置ける、接地が安定、細部表現がよい、サポートが少ないものを優先。
+    // 痕跡は補助的な減点にとどめる。
+    const s =
+      (e.balanceScore || 0) * 0.42 +
+      (e.detailScore || 0) * 0.34 +
+      (e.supportScore || 0) * 0.18 -
+      supportPenalty(e) * 18 -
+      scarSmallPenalty(e) -
+      Math.max(0, hRatio - 1) * 28;
+
+    if(s > bestScore){
+      bestScore = s;
+      best = e;
+    }
+  }
+
+  // それでも非常に厳しい場合や差が小さい場合は、元のSTLの向き「表面を上」を優先して△にする。
+  const original = valid[0] || null;
+  if(original){
+    const originalHeight = Math.max(0.001, original.size?.y || 9999);
+    const originalHeightRatio = originalHeight / Math.max(0.001, minHeight);
+    const originalUsable =
+      originalHeightRatio <= 1.45 ||
+      (original.balanceScore >= 45 && original.detailScore >= 55);
+
+    if(best && best !== original){
+      const originalScore =
+        (original.balanceScore || 0) * 0.42 +
+        (original.detailScore || 0) * 0.34 +
+        (original.supportScore || 0) * 0.18 -
+        supportPenalty(original) * 18 -
+        scarSmallPenalty(original) -
+        Math.max(0, originalHeightRatio - 1) * 28;
+
+      // 最良候補との差が小さい、または全体的に低得点なら元向きを優先。
+      if(originalUsable && (bestScore < 42 || bestScore - originalScore < 10)){
+        best = original;
+      }
+    }else if(originalUsable){
+      best = original;
+    }
+  }
+
+  if(ev === best) return "△";
   return "×";
 }
 
-function openLayerOrientationScreen(){
+async function openLayerOrientationScreen(){
   if(!objectData?.geom){
     setResult("judging","STL読み込み","まずSTLファイルを読み込んでください。");
     return;
@@ -4694,6 +4809,9 @@ function openLayerOrientationScreen(){
   if(!grid) return;
   grid.innerHTML = "";
   grid.classList.remove("singleLayerMode");
+
+  // 重いPCでも「押された」ことが見えるように、表示を先に反映させてから計算する。
+  await sleep(80);
 
   layerEvaluations = LAYER_ORIENTATIONS.map((_,i)=>evaluateLayerOrientation(i));
 
@@ -4800,6 +4918,7 @@ function renderSingleLayerOrientation(index){
 }
 
 function closeLayerOrientationScreen(){
+  hideLayerComputeOverlay();
   closeLayerConfirm();
   document.body.classList.remove("layer-screen-open");
   document.getElementById("layerGrid")?.classList.remove("singleLayerMode");
@@ -4888,6 +5007,23 @@ if(document.readyState === "loading"){
   document.addEventListener("DOMContentLoaded", setupLayerOrientationUI);
 }else{
   setupLayerOrientationUI();
+}
+
+
+function setupGlobalButtonPressedFeedback(){
+  document.addEventListener("click", (e)=>{
+    const btn = e.target?.closest?.("button");
+    if(!btn) return;
+    if(btn.disabled) return;
+    if(btn.id === "flowLayerBtn") return; // 積層方向判定は専用処理で保持表示
+    showButtonPressedFeedback(btn, false);
+  }, true);
+}
+
+if(document.readyState === "loading"){
+  document.addEventListener("DOMContentLoaded", setupGlobalButtonPressedFeedback);
+}else{
+  setupGlobalButtonPressedFeedback();
 }
 
 /* フローチャート後付け制御。既存の3D初期化やガチャポン表示処理には触れない。 */
@@ -4997,15 +5133,34 @@ if(document.readyState === "loading"){
       if(typeof judge === "function") judge();
     });
 
-    $("flowLayerBtn")?.addEventListener("click", ()=>{
+    $("flowLayerBtn")?.addEventListener("click", async ()=>{
+      const btn = $("flowLayerBtn");
+      if(isLayerComputing) return;
+
       refreshFlow();
       if(!flow.sizeOk){
+        showButtonPressedFeedback(btn, false);
         showGuide("大きさ判定", "先に48mmガチャポンの大きさ判定を行ってください。");
         return;
       }
+
       if(typeof openLayerOrientationScreen === "function"){
-        openLayerOrientationScreen();
+        isLayerComputing = true;
+        showButtonPressedFeedback(btn, true);
+        btn.disabled = true;
+        showLayerComputeOverlay();
+
+        try{
+          await sleep(60);
+          await openLayerOrientationScreen();
+        }finally{
+          hideLayerComputeOverlay();
+          clearButtonPressedFeedback(btn);
+          isLayerComputing = false;
+          refreshFlow();
+        }
       }else{
+        showButtonPressedFeedback(btn, false);
         showGuide("積層方向判定", "積層方向判定画面を開けません。");
       }
     });
@@ -5113,5 +5268,10 @@ if(document.readyState === "loading"){
 
 
 </script>
+
+  <div id="layerComputeOverlay" aria-live="polite" aria-label="積層方向計算中">
+    <div id="layerComputeMessage">積層方向の表示を計算しています。<br>しばらくお待ちください。</div>
+  </div>
+
 </body>
 </html>
