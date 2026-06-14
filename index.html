@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>48mmガチャポンFIT　V2.44</title>
+<title>48mmガチャポンFIT　V2.46</title>
 <style>
 :root{
   --bg:#e7ebf4; --panel:#ffffff; --ink:#172033; --muted:#667085;
@@ -894,7 +894,7 @@ body.layer-screen-open #layerScreen{
 }
 
 
-/* V2.44: 6面表示の3D領域をカード全体に広げる */
+/* V2.46: 6面表示の3D領域をカード全体に広げる */
 #layerGrid:not(.singleLayerMode) .layerCanvasWrap{
   inset:0 !important;
 }
@@ -977,7 +977,7 @@ body.layer-screen-open #layerScreen{
 }
 
 
-/* V2.44: 積層方向選択時の黄色枠 */
+/* V2.46: 積層方向選択時の黄色枠 */
 body.layer-screen-open .layerCard.selected{
   border-color:#f59e0b !important;
   box-shadow:
@@ -1017,7 +1017,7 @@ body.layer-screen-open .layerCard.selected::after{
 }
 
 
-/* V2.44: 現在位置は文字ではなく、赤い太めの矢印グラフィックで表示 */
+/* V2.46: 現在位置は文字ではなく、赤い太めの矢印グラフィックで表示 */
 .flowNowArrow{
   position:relative;
   width:34px;
@@ -1058,7 +1058,7 @@ body.layer-screen-open .layerCard.selected::after{
 }
 
 
-/* V2.44: 積層方向判定画面でも右端にフローチャートを表示 */
+/* V2.46: 積層方向判定画面でも右端にフローチャートを表示 */
 body.layer-screen-open #flowPanel{
   display:block !important;
   z-index:140 !important;
@@ -1078,7 +1078,7 @@ body.layer-screen-open #layerGrid{
 }
 
 
-/* V2.44: 積層方向画面ではフローチャートを右上角へ寄せる */
+/* V2.46: 積層方向画面ではフローチャートを右上角へ寄せる */
 body.layer-screen-open #flowPanel{
   display:block !important;
   z-index:140 !important;
@@ -1100,7 +1100,7 @@ body.layer-screen-open #layerGrid{
 }
 
 
-/* V2.44: 現在位置は赤い点滅丸で表示 */
+/* V2.46: 現在位置は赤い点滅丸で表示 */
 .flowNowArrow{
   position:relative !important;
   width:24px !important;
@@ -1143,7 +1143,7 @@ body.layer-screen-open #layerGrid{
 }
 
 
-/* V2.44: フローチャートを右上端に寄せる */
+/* V2.46: フローチャートを右上端に寄せる */
 #flowPanel{
   top:8px !important;
   right:6px !important;
@@ -1154,7 +1154,7 @@ body.layer-screen-open #flowPanel{
 }
 
 
-/* V2.44: フローチャートの↓を処理ボックスの中央に合わせる */
+/* V2.46: フローチャートの↓を処理ボックスの中央に合わせる */
 #flowPanel .flowArrow{
   width:auto !important;
   margin:2px 0 2px 34px !important; /* 左の赤丸スペース分だけずらす */
@@ -1171,7 +1171,7 @@ body.layer-screen-open #flowPanel{
 }
 
 
-/* V2.44: ボタン押下フィードバックと積層方向計算中表示 */
+/* V2.46: ボタン押下フィードバックと積層方向計算中表示 */
 button.pressedFeedback,
 .flowStep.pressedFeedback{
   background:#dc2626 !important;
@@ -1243,6 +1243,28 @@ button.processingLock,
   line-height:1.55;
 }
 
+
+/* V2.46: 提出用STL保存の入力欄は、誤入力防止のため全て縦並び */
+.submitGrid{
+  grid-template-columns:1fr !important;
+  gap:12px !important;
+}
+.submitGrid > div{
+  display:block;
+}
+.submitGrid label{
+  display:block;
+  margin:10px 0 6px !important;
+  font-size:20px !important;
+  font-weight:900;
+}
+#centerConfirmText{
+  white-space:pre-line;
+}
+#submitFilePreview{
+  font-weight:800;
+}
+
 </style>
 </head>
 <body>
@@ -1256,7 +1278,7 @@ button.processingLock,
       <button id="settingsBtn" class="light">設定変更</button>
     </div>
     <div class="titleBox">
-      <h1>48mmガチャポンFIT　V2.44</h1>
+      <h1>48mmガチャポンFIT　V2.46</h1>
       <div class="sub"></div>
     </div>
     <div class="rightTopGroup">
@@ -1323,7 +1345,8 @@ button.processingLock,
   <div id="submitDialog" role="dialog" aria-modal="true" aria-labelledby="submitDialogTitle">
     <h2 id="submitDialogTitle">提出用STL保存</h2>
     <div class="notice">
-      学年・クラス・番号・氏名から、提出用ファイル名を自動で作成します。
+      学年・クラス・番号・氏名を上から順番に入力してください。<br>
+      保存前にファイル名を確認します。
     </div>
     <div class="submitGrid">
       <div>
@@ -1352,7 +1375,7 @@ button.processingLock,
 
 
   <div id="layerScreen" aria-label="積層方向判定画面">
-    <div id="layerAppTitle">48mmガチャポンFIT　V2.44</div>
+    <div id="layerAppTitle">48mmガチャポンFIT　V2.46</div>
     <div id="layerHeader">
       <div>
         <div id="layerTitle">積層方向判定</div>
@@ -1406,9 +1429,6 @@ button.processingLock,
 
     <div class="card">
       <h2>判定設定</h2>
-      <div class="settingsSectionTitle">ガチャ玉に入るか判定</div>
-      <div class="settingsSectionNote">ガチャ玉の内側に、作品が入るかどうかを調べるための設定です。</div>
-
       <label>安全余裕 mm</label>
       <input id="margin" type="number" value="0.4" step="0.1" min="0" max="5">
 
@@ -1613,19 +1633,23 @@ async function openSubmitDialog(){
   setTimeout(()=>document.getElementById("submitName")?.focus(), 50);
 }
 
-function showCenterConfirm(message){
+function showCenterConfirm(message, yesLabel="はい", noLabel="いいえ"){
   return new Promise((resolve)=>{
     const text=document.getElementById("centerConfirmText");
     const yes=document.getElementById("centerConfirmYesBtn");
     const no=document.getElementById("centerConfirmNoBtn");
     const backdrop=document.getElementById("centerConfirmBackdrop");
     if(text) text.textContent=message;
+    if(yes) yes.textContent=yesLabel;
+    if(no) no.textContent=noLabel;
 
     function cleanup(result){
       document.body.classList.remove("center-confirm-open");
       yes?.removeEventListener("click", onYes);
       no?.removeEventListener("click", onNo);
       backdrop?.removeEventListener("click", onNo);
+      if(yes) yes.textContent="はい";
+      if(no) no.textContent="いいえ";
       resolve(result);
     }
     function onYes(){ cleanup(true); }
@@ -1661,6 +1685,14 @@ function b64ToArrayBuffer(b64){
   return bytes.buffer;
 }
 function setResult(kind, main, sub){
+  if(kind === "ok" && String(main || "").includes("入ります")){
+    const nextGuide = "次に、右側のフローチャートの「積層方向判定」ボタンを押してください。";
+    const currentSub = String(sub || "");
+    if(!currentSub.includes("積層方向判定")){
+      sub = currentSub ? `${currentSub}\n${nextGuide}` : nextGuide;
+    }
+  }
+
   const box=document.getElementById("resultOverlay");
   box.className=kind || "idle";
   const mainEl=document.getElementById("resultMain");
@@ -1669,7 +1701,7 @@ function setResult(kind, main, sub){
   document.getElementById("resultSub").innerHTML=String(sub || "").replace(/\\n/g,"<br>").replace(/\n/g,"<br>");
 
   if(kind==="ok" && String(main||"").includes("入ります")){
-    // V2.44: 薄すぎ・細すぎの判定は、現在の倍率で「入ります」と表示される時に行う。
+    // V2.46: 薄すぎ・細すぎの判定は、現在の倍率で「入ります」と表示される時に行う。
     // 読み込み時点で小さくても、その後に拡大して入る場合があるため、ここで最終確認する。
     if(objectData?.geom && !suppressFragileCheckOnOkDisplay){
       recomputeFragileCheckForDisplayedSTL();
@@ -1714,7 +1746,7 @@ function showScalePrompt(text){
   if(textEl && text) textEl.textContent=text;
   if(prompt) prompt.style.display="block";
 
-  // V2.44: 「STLを自動で拡大しますか？」などの確認中は、
+  // V2.46: 「STLを自動で拡大しますか？」などの確認中は、
   // 目で確認しやすいようにSTLを動かさない。
   stopPromptSpin();
   isJudgingSpin=false;
@@ -2633,7 +2665,7 @@ function translationCandidates(step){
 }
 
 function previewJudgingPose(rx, ry, rz, t=null){
-  // V2.44: 主要姿勢を1つずつ表示するとカクカクして見えるため、
+  // V2.46: 主要姿勢を1つずつ表示するとカクカクして見えるため、
   // 判定中は連続回転アニメーションに統一する。
   // この関数は互換性のため残すが、表示姿勢は強制変更しない。
   if(!objectMesh) return;
@@ -3366,7 +3398,7 @@ function strictScaleForPose(pose, maxScale){
   return Math.max(1, lo*0.985);
 }
 
-function submitDownloadSTL(){
+async function submitDownloadSTL(){
   if(!objectData) return;
 
   if(objectHasBlockingProblem()){
@@ -3407,10 +3439,22 @@ function submitDownloadSTL(){
     return;
   }
 
+  const filename=makeSubmitFileName();
+  const confirmed = await showCenterConfirm(
+    `このファイル名で保存しますか？\n\n${filename}`,
+    "保存する",
+    "ファイル名修正に戻る"
+  );
+  if(!confirmed){
+    document.body.classList.add("submit-dialog-open");
+    updateSubmitPreview();
+    setTimeout(()=>document.getElementById("submitGrade")?.focus(), 50);
+    return;
+  }
+
   const blob=makeCurrentSTLBlob(1);
   if(!blob) return;
 
-  const filename=makeSubmitFileName();
   const url=URL.createObjectURL(blob);
   const a=document.createElement("a");
   a.href=url;
@@ -3582,7 +3626,7 @@ async function judge(){
   let angleStep=Number(document.getElementById("angleStep").value);
   let tStep=Number(document.getElementById("translationStep").value);
   let maxN=Number(document.getElementById("sampleCount").value);
-  // V2.44: 回転演出時間の設定は廃止。
+  // V2.46: 回転演出時間の設定は廃止。
   // アニメーションは実際の判定処理中だけ動かす。
   const timeLimit=Number(document.getElementById("timeLimit").value)||10000;
   const autoLight=document.getElementById("autoLight").value==="on";
@@ -3627,7 +3671,7 @@ async function judge(){
   bestPose=null;
 
   const start=performance.now();
-  // V2.44: 見せるためだけの待ち時間は使わない。
+  // V2.46: 見せるためだけの待ち時間は使わない。
   // アニメーションは実際の判定処理中だけ表示する。
   startSpin(timeLimit, 0);
 
@@ -3643,7 +3687,7 @@ async function judge(){
       for(const rz of angles){
         tried++;
 
-        // V2.44: 見せるためだけの待機はしない。
+        // V2.46: 見せるためだけの待機はしない。
         // UI更新のために時々だけ処理を譲る。
         if(tried % 8 === 0){
           await sleep(0);
@@ -3807,7 +3851,7 @@ async function judge(){
     }
   }
 
-  // V2.44: 入らない場合も、演出のためだけには待たない。
+  // V2.46: 入らない場合も、演出のためだけには待たない。
   // 判定が終わったらすぐに赤表示へ移る。
   await stopSpin();
 
@@ -4084,7 +4128,7 @@ function makeLayerGeometry(orientationIndex){
   const ori = LAYER_ORIENTATIONS[orientationIndex];
   const geom = objectData.geom.clone();
 
-  // V2.44: 積層方向判定では立体の実寸は変えない。
+  // V2.46: 積層方向判定では立体の実寸は変えない。
   // 見やすさのための拡大縮小はカメラ側だけで行う。
   geom.applyMatrix4(layerOrientationMatrix(ori));
   geom.computeBoundingBox();
@@ -4557,7 +4601,7 @@ function createLayerScene(container, evaluation, index){
   const isSixView = !!document.getElementById("layerGrid") && !document.getElementById("layerGrid").classList.contains("singleLayerMode");
   // 6面表示では、各方向のモデル全体が必ずカード内に収まるよう、
   // STLの最大寸法から表示枠を決める。ガチャポン判定時の倍率は使わない。
-  // V2.44: 6画面表示では、はみ出し防止のため表示枠を少し大きめに取る。
+  // V2.46: 6画面表示では、はみ出し防止のため表示枠を少し大きめに取る。
   // これはカメラ表示だけの調整で、STLの実寸は変えない。
   const viewBaseDim = isSixView ? Math.max(48, modelDim * 1.55) : Math.max(105, modelDim);
   const maxDim = viewBaseDim;
@@ -4945,7 +4989,11 @@ function applyLayerOrientationSelection(){
   layerSelectedOrientationIndex = chosenIndex;
 
   closeLayerOrientationScreen();
-  setResult("ok","積層方向を選びました",`${ori.label}の向きにSTL座標を変換して保存します。`);
+  setResult(
+    "ok",
+    "積層方向を選びました",
+    `${ori.label}の向きにSTL座標を変換して保存します。\n次に、右側のフローチャートの「提出用STL保存」ボタンを押してください。`
+  );
   window.dispatchEvent(new CustomEvent("layerOrientationApplied", {detail:{index:chosenIndex, orientation:ori}}));
 }
 
