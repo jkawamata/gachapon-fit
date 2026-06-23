@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>48mmガチャポンFIT　V2.47</title>
+<title>48mmガチャポンFIT　V2.49</title>
 <style>
 :root{
   --bg:#e7ebf4; --panel:#ffffff; --ink:#172033; --muted:#667085;
@@ -421,7 +421,7 @@ body.submit-dialog-open #submitDialogBackdrop{
   position:absolute;
   left:50%;
   top:50%;
-  /* V2.47: 生徒端末で上下が欠けないよう、提出用STL保存ウインドウだけ0.8倍表示 */
+  /* V2.49: 生徒端末で上下が欠けないよう、提出用STL保存ウインドウだけ0.8倍表示 */
   transform:translate(-50%,-50%) scale(0.8);
   transform-origin:center center;
   z-index:71;
@@ -896,7 +896,7 @@ body.layer-screen-open #layerScreen{
 }
 
 
-/* V2.47: 6面表示の3D領域をカード全体に広げる */
+/* V2.49: 6面表示の3D領域をカード全体に広げる */
 #layerGrid:not(.singleLayerMode) .layerCanvasWrap{
   inset:0 !important;
 }
@@ -979,7 +979,7 @@ body.layer-screen-open #layerScreen{
 }
 
 
-/* V2.47: 積層方向選択時の黄色枠 */
+/* V2.49: 積層方向選択時の黄色枠 */
 body.layer-screen-open .layerCard.selected{
   border-color:#f59e0b !important;
   box-shadow:
@@ -1019,7 +1019,7 @@ body.layer-screen-open .layerCard.selected::after{
 }
 
 
-/* V2.47: 現在位置は文字ではなく、赤い太めの矢印グラフィックで表示 */
+/* V2.49: 現在位置は文字ではなく、赤い太めの矢印グラフィックで表示 */
 .flowNowArrow{
   position:relative;
   width:34px;
@@ -1060,7 +1060,7 @@ body.layer-screen-open .layerCard.selected::after{
 }
 
 
-/* V2.47: 積層方向判定画面でも右端にフローチャートを表示 */
+/* V2.49: 積層方向判定画面でも右端にフローチャートを表示 */
 body.layer-screen-open #flowPanel{
   display:block !important;
   z-index:140 !important;
@@ -1080,7 +1080,7 @@ body.layer-screen-open #layerGrid{
 }
 
 
-/* V2.47: 積層方向画面ではフローチャートを右上角へ寄せる */
+/* V2.49: 積層方向画面ではフローチャートを右上角へ寄せる */
 body.layer-screen-open #flowPanel{
   display:block !important;
   z-index:140 !important;
@@ -1102,7 +1102,7 @@ body.layer-screen-open #layerGrid{
 }
 
 
-/* V2.47: 現在位置は赤い点滅丸で表示 */
+/* V2.49: 現在位置は赤い点滅丸で表示 */
 .flowNowArrow{
   position:relative !important;
   width:24px !important;
@@ -1145,7 +1145,7 @@ body.layer-screen-open #layerGrid{
 }
 
 
-/* V2.47: フローチャートを右上端に寄せる */
+/* V2.49: フローチャートを右上端に寄せる */
 #flowPanel{
   top:8px !important;
   right:6px !important;
@@ -1156,7 +1156,7 @@ body.layer-screen-open #flowPanel{
 }
 
 
-/* V2.47: フローチャートの↓を処理ボックスの中央に合わせる */
+/* V2.49: フローチャートの↓を処理ボックスの中央に合わせる */
 #flowPanel .flowArrow{
   width:auto !important;
   margin:2px 0 2px 34px !important; /* 左の赤丸スペース分だけずらす */
@@ -1173,7 +1173,7 @@ body.layer-screen-open #flowPanel{
 }
 
 
-/* V2.47: ボタン押下フィードバックと積層方向計算中表示 */
+/* V2.49: ボタン押下フィードバックと積層方向計算中表示 */
 button.pressedFeedback,
 .flowStep.pressedFeedback{
   background:#dc2626 !important;
@@ -1246,7 +1246,7 @@ button.processingLock,
 }
 
 
-/* V2.47: 提出用STL保存の入力欄は、誤入力防止のため全て縦並び */
+/* V2.49: 提出用STL保存の入力欄は、誤入力防止のため全て縦並び */
 .submitGrid{
   grid-template-columns:1fr !important;
   gap:12px !important;
@@ -1273,6 +1273,26 @@ button.processingLock,
   overflow:auto;
 }
 
+
+#resultOverlay.hasAction{
+  pointer-events:auto;
+}
+.resultActionButtons{
+  margin-top:16px;
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.resultActionButtons button{
+  font-size:18px;
+  padding:12px 18px;
+}
+.teacherOverrideBtn{
+  background:#b91c1c;
+  color:#fff;
+}
+
 </style>
 </head>
 <body>
@@ -1286,7 +1306,7 @@ button.processingLock,
       <button id="settingsBtn" class="light">設定変更</button>
     </div>
     <div class="titleBox">
-      <h1>48mmガチャポンFIT　V2.47</h1>
+      <h1>48mmガチャポンFIT　V2.49</h1>
       <div class="sub"></div>
     </div>
     <div class="rightTopGroup">
@@ -1320,6 +1340,7 @@ button.processingLock,
       <div id="progressBarOuter"><div id="progressBarInner"></div></div>
       <button id="cancelCheckBtn">判定をキャンセル</button>
     </div>
+    <div id="resultActionButtons" class="resultActionButtons"></div>
     <div id="scalePrompt">
       <div id="scalePromptText">STLを自動で縮小しますか？</div>
       <div id="scalePromptButtons">
@@ -1383,7 +1404,7 @@ button.processingLock,
 
 
   <div id="layerScreen" aria-label="積層方向判定画面">
-    <div id="layerAppTitle">48mmガチャポンFIT　V2.47</div>
+    <div id="layerAppTitle">48mmガチャポンFIT　V2.49</div>
     <div id="layerHeader">
       <div>
         <div id="layerTitle">積層方向判定</div>
@@ -1499,6 +1520,9 @@ button.processingLock,
         <option value="no" selected>許容しない：提出不可にする</option>
         <option value="yes">許容する：大きさ判定に進む</option>
       </select>
+      <div class="notice" style="margin-top:8px">
+        接合していない複数の立体に分かれているSTLを検出します。低ポリゴンの立方体が複数ある場合も判定します。
+      </div>
 
       <label>薄すぎる部分の判定 mm</label>
       <input id="thinLimit" type="number" value="0.8" step="0.1" min="0" max="5">
@@ -1583,6 +1607,7 @@ let enlargeCheckCanceledAsFinished=false;
 let fitConfirmedForSubmit=false;
 let isApplyingAdjustment=false;
 let suppressFragileCheckOnOkDisplay=false;
+let teacherAllowedSplitSTL=false;
 let isJudgingSpin=false, spinStartTime=0, spinDuration=0, spinMinVisibleMs=0, spinBaseRotation=null, isPosePreviewDuringJudge=false, lastJudgingOverlayUpdate=0, isPromptSpin=false, promptSpinStartTime=0, promptSpinBaseRotation=null;
 
 const logEl=document.getElementById("log");
@@ -1693,6 +1718,7 @@ function b64ToArrayBuffer(b64){
   return bytes.buffer;
 }
 function setResult(kind, main, sub){
+  clearResultActionButtons();
   if(kind === "ok" && String(main || "").includes("入ります")){
     const nextGuide = "次に、右側のフローチャートの「積層方向判定」ボタンを押してください。";
     const currentSub = String(sub || "");
@@ -1709,7 +1735,7 @@ function setResult(kind, main, sub){
   document.getElementById("resultSub").innerHTML=String(sub || "").replace(/\\n/g,"<br>").replace(/\n/g,"<br>");
 
   if(kind==="ok" && String(main||"").includes("入ります")){
-    // V2.47: 薄すぎ・細すぎの判定は、現在の倍率で「入ります」と表示される時に行う。
+    // V2.49: 薄すぎ・細すぎの判定は、現在の倍率で「入ります」と表示される時に行う。
     // 読み込み時点で小さくても、その後に拡大して入る場合があるため、ここで最終確認する。
     if(objectData?.geom && !suppressFragileCheckOnOkDisplay){
       recomputeFragileCheckForDisplayedSTL();
@@ -1754,7 +1780,7 @@ function showScalePrompt(text){
   if(textEl && text) textEl.textContent=text;
   if(prompt) prompt.style.display="block";
 
-  // V2.47: 「STLを自動で拡大しますか？」などの確認中は、
+  // V2.49: 「STLを自動で拡大しますか？」などの確認中は、
   // 目で確認しやすいようにSTLを動かさない。
   stopPromptSpin();
   isJudgingSpin=false;
@@ -1969,10 +1995,20 @@ function getUniqueVertices(geom){
 }
 
 
+
 function analyzeSTLConnectedComponents(geom){
   const pos = geom?.attributes?.position?.array;
   if(!pos || pos.length < 9){
-    return {componentCount:0, significantCount:0, printIslandCount:0, components:[], printIslands:[], largestRatio:1, warning:false};
+    return {
+      componentCount:0,
+      significantCount:0,
+      printIslandCount:0,
+      components:[],
+      printIslands:[],
+      largestRatio:1,
+      warning:false,
+      reason:""
+    };
   }
 
   const triCount = Math.floor(pos.length / 9);
@@ -2030,18 +2066,31 @@ function analyzeSTLConnectedComponents(geom){
 
     const size = new THREE.Vector3();
     bbox.getSize(size);
-    components.push({triangles:count, bbox, size});
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const minDim = Math.min(size.x, size.y, size.z);
+    components.push({triangles:count, bbox, size, maxDim, minDim});
   }
 
   components.sort((a,b)=>b.triangles-a.triangles);
   const largest = components[0]?.triangles || 0;
   const largestRatio = triCount ? largest / triCount : 1;
 
-  // 小さなゴミ三角形まで警告しないため、一定以上のかたまりだけを見る。
-  const significant = components.filter(c => c.triangles >= Math.max(20, triCount * 0.01));
+  // V2.49:
+  // これまでは20三角形未満のかたまりを無視していたため、
+  // 低ポリゴンの立方体（1個12三角形）が複数に分かれているSTLを見逃していた。
+  // 小さなゴミ三角形は除外しつつ、5mm程度の立方体のような独立部品は拾う。
+  const settings = (typeof getFragileSettings === "function") ? getFragileSettings() : {narrowLimit:1.0};
+  const meaningfulDim = Math.max(1.0, Number(settings.narrowLimit || 1.0));
+  const minTriForIsland = Math.max(6, Math.floor(triCount * 0.001));
 
-  // ここからは「STL上のメッシュ分離」ではなく、
-  // 「3Dプリント時に別々になりそうな島」を推定する。
+  const significant = components.filter(c => {
+    if(c.triangles < minTriForIsland) return false;
+    if(c.maxDim < meaningfulDim) return false;
+    // 1〜2枚だけの薄いゴミ面は除外しやすくする。
+    if(c.triangles < 8 && c.minDim < 0.05) return false;
+    return true;
+  });
+
   const n = significant.length;
   const parent = Array.from({length:n}, (_,i)=>i);
 
@@ -2086,11 +2135,12 @@ function analyzeSTLConnectedComponents(geom){
   for(let i=0;i<n;i++){
     const r = find(i);
     if(!islandMap.has(r)){
-      islandMap.set(r, {components:0, triangles:0, bbox:new THREE.Box3()});
+      islandMap.set(r, {components:0, triangles:0, bbox:new THREE.Box3(), maxDim:0});
     }
     const island = islandMap.get(r);
     island.components++;
     island.triangles += significant[i].triangles;
+    island.maxDim = Math.max(island.maxDim, significant[i].maxDim || 0);
     island.bbox.union(significant[i].bbox);
   }
 
@@ -2104,6 +2154,7 @@ function analyzeSTLConnectedComponents(geom){
     components,
     printIslands,
     largestRatio,
+    reason: printIslandCount >= 2 ? "接合していない複数の立体に分かれている可能性があります。" : "",
     // 警告はメッシュ数ではなく、印刷時に分かれそうな島の数で判断する。
     warning: printIslandCount >= 2
   };
@@ -2113,7 +2164,7 @@ function analyzeSTLConnectedComponents(geom){
 function componentWarningText(info){
   if(!info || !info.warning) return "";
   const count = info.printIslandCount || info.significantCount || 2;
-  return `このSTLは、3Dプリント時に${count}個に分かれてしまう可能性があります。\n部品同士が離れていないか確認してください。\n分かれている場合は、部品同士を接触・結合してから、もう一度STLを書き出してください。`;
+  return `このSTLは、接合していない複数の立体に分かれている可能性があります。\n3Dプリントすると、実質的に${count}個の別々の部品として出力されるおそれがあります。\n部品同士を接触・結合してから、もう一度STLを書き出してください。`;
 }
 
 function analyzeSTLFragileParts(geom){
@@ -2274,20 +2325,57 @@ function stopIfDisplayedSTLIsFragile(){
 function objectHasBlockingProblem(){
   const settings = getFragileSettings();
   return !!(
-    (!settings.allowSplit && objectData?.componentInfo?.warning)
+    (!settings.allowSplit && objectData?.componentInfo?.warning && !teacherAllowedSplitSTL && !objectData?.componentInfo?.teacherOverride)
   );
 }
 
 function showBlockingProblemMessage(){
   const settings = getFragileSettings();
-  if(!settings.allowSplit && objectData?.componentInfo?.warning){
-    setResult("ng","STLが分かれる可能性があります", componentWarningText(objectData.componentInfo));
+  if(!settings.allowSplit && objectData?.componentInfo?.warning && !teacherAllowedSplitSTL && !objectData?.componentInfo?.teacherOverride){
+    setResult(
+      "ng",
+      "STL自体に問題があります",
+      componentWarningText(objectData.componentInfo) + "\n\n先生が確認して問題ないと判断した場合だけ、下のボタンで大きさ判定に進めます。"
+    );
+    showTeacherSplitOverrideButton();
     return true;
   }
   return false;
 }
 
 
+
+
+function clearResultActionButtons(){
+  const wrap=document.getElementById("resultActionButtons");
+  if(wrap) wrap.innerHTML="";
+  document.getElementById("resultOverlay")?.classList.remove("hasAction");
+}
+
+function showTeacherSplitOverrideButton(){
+  const wrap=document.getElementById("resultActionButtons");
+  const box=document.getElementById("resultOverlay");
+  if(!wrap || !box) return;
+
+  wrap.innerHTML="";
+  const btn=document.createElement("button");
+  btn.type="button";
+  btn.className="teacherOverrideBtn";
+  btn.textContent="先生確認済み：このまま大きさ判定に進む";
+  btn.addEventListener("click", ()=>{
+    teacherAllowedSplitSTL=true;
+    if(objectData?.componentInfo){
+      objectData.componentInfo.teacherOverride=true;
+    }
+    clearResultActionButtons();
+    setResult("judging","大きさ判定へ進みます","先生が分離STLを確認済みとして、このままガチャ玉に入るかを判定します。");
+    setTimeout(()=>{
+      if(typeof judge === "function") judge();
+    }, 80);
+  });
+  wrap.appendChild(btn);
+  box.classList.add("hasAction");
+}
 
 function radiusAtYForGeom(verts, y){
   let best = 0;
@@ -2497,6 +2585,7 @@ function readObjectFile(f, source="drop"){
     setResult("ng","STLではありません","拡張子が .stl のファイルをドロップしてください。");
     return;
   }
+  teacherAllowedSplitSTL=false;
   const reader=new FileReader();
   reader.onload=e=>{
     loadObjectBuffer(e.target.result,f.name);
@@ -2510,6 +2599,7 @@ function readObjectFile(f, source="drop"){
   reader.readAsArrayBuffer(f);
 }
 function loadObjectBuffer(buffer,name){
+  teacherAllowedSplitSTL=false;
   if(document.body.classList.contains("layer-screen-open")){
     closeLayerOrientationScreen();
   }
@@ -2572,7 +2662,7 @@ function loadObjectBuffer(buffer,name){
       objectMesh.material.needsUpdate = true;
     }
     setPill("posePill","判定：STL分離の可能性");
-    setResult("ng","STLが分かれる可能性があります", componentWarningText(componentInfo));
+    setResult("ng","STL自体に問題があります", componentWarningText(componentInfo));
   }else if(fragileInfo.warning){
     lastFitStatus="ng";
     fitConfirmedForSubmit=false;
@@ -2673,7 +2763,7 @@ function translationCandidates(step){
 }
 
 function previewJudgingPose(rx, ry, rz, t=null){
-  // V2.47: 主要姿勢を1つずつ表示するとカクカクして見えるため、
+  // V2.49: 主要姿勢を1つずつ表示するとカクカクして見えるため、
   // 判定中は連続回転アニメーションに統一する。
   // この関数は互換性のため残すが、表示姿勢は強制変更しない。
   if(!objectMesh) return;
@@ -3201,6 +3291,7 @@ function resetAfterSubmitSave(){
   lastFitStatus = "none";
   fitConfirmedForSubmit = false;
   enlargeCheckCanceledAsFinished = false;
+  teacherAllowedSplitSTL = false;
 
   if(typeof layerOrientationApplied !== "undefined") layerOrientationApplied = false;
   if(typeof layerSelectedOrientationIndex !== "undefined") layerSelectedOrientationIndex = null;
@@ -3634,7 +3725,7 @@ async function judge(){
   let angleStep=Number(document.getElementById("angleStep").value);
   let tStep=Number(document.getElementById("translationStep").value);
   let maxN=Number(document.getElementById("sampleCount").value);
-  // V2.47: 回転演出時間の設定は廃止。
+  // V2.49: 回転演出時間の設定は廃止。
   // アニメーションは実際の判定処理中だけ動かす。
   const timeLimit=Number(document.getElementById("timeLimit").value)||10000;
   const autoLight=document.getElementById("autoLight").value==="on";
@@ -3679,7 +3770,7 @@ async function judge(){
   bestPose=null;
 
   const start=performance.now();
-  // V2.47: 見せるためだけの待ち時間は使わない。
+  // V2.49: 見せるためだけの待ち時間は使わない。
   // アニメーションは実際の判定処理中だけ表示する。
   startSpin(timeLimit, 0);
 
@@ -3695,7 +3786,7 @@ async function judge(){
       for(const rz of angles){
         tried++;
 
-        // V2.47: 見せるためだけの待機はしない。
+        // V2.49: 見せるためだけの待機はしない。
         // UI更新のために時々だけ処理を譲る。
         if(tried % 8 === 0){
           await sleep(0);
@@ -3859,7 +3950,7 @@ async function judge(){
     }
   }
 
-  // V2.47: 入らない場合も、演出のためだけには待たない。
+  // V2.49: 入らない場合も、演出のためだけには待たない。
   // 判定が終わったらすぐに赤表示へ移る。
   await stopSpin();
 
@@ -4136,7 +4227,7 @@ function makeLayerGeometry(orientationIndex){
   const ori = LAYER_ORIENTATIONS[orientationIndex];
   const geom = objectData.geom.clone();
 
-  // V2.47: 積層方向判定では立体の実寸は変えない。
+  // V2.49: 積層方向判定では立体の実寸は変えない。
   // 見やすさのための拡大縮小はカメラ側だけで行う。
   geom.applyMatrix4(layerOrientationMatrix(ori));
   geom.computeBoundingBox();
@@ -4609,7 +4700,7 @@ function createLayerScene(container, evaluation, index){
   const isSixView = !!document.getElementById("layerGrid") && !document.getElementById("layerGrid").classList.contains("singleLayerMode");
   // 6面表示では、各方向のモデル全体が必ずカード内に収まるよう、
   // STLの最大寸法から表示枠を決める。ガチャポン判定時の倍率は使わない。
-  // V2.47: 6画面表示では、はみ出し防止のため表示枠を少し大きめに取る。
+  // V2.49: 6画面表示では、はみ出し防止のため表示枠を少し大きめに取る。
   // これはカメラ表示だけの調整で、STLの実寸は変えない。
   const viewBaseDim = isSixView ? Math.max(48, modelDim * 1.55) : Math.max(105, modelDim);
   const maxDim = viewBaseDim;
