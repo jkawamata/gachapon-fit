@@ -108,7 +108,8 @@ gachapon-fit/
 
 ライセンス
 
-ライセンスは CC BY（ 表示4.0国際 https://creativecommons.org/licenses/by/4.0/　）とします。
+ライセンスは CC BY（ 表示4.0国際　）とします。
+https://creativecommons.org/licenses/by/4.0/
 参考資料として明記していただければ、再利用や改変は自由に可能です。ぜひご自身でバイブコーディングで必要な機能を追加実装してみてください。
 
 
