@@ -81,10 +81,7 @@ Safari
 ファイル構成
 
 基本的には、HTML / CSS / JavaScript で作成されたブラウザアプリです。
-gachapon-fit/
-├── index.html
-└── README.md
-実際の構成は、リポジトリ内のファイルに合わせて調整してください。
+htmlファイル１つで動作します。STLを表示するためにネット接続が必要です。
 
 
 開発の考え方
