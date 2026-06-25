@@ -66,7 +66,6 @@ https://jkawamata.github.io/gachapon-fit/
 どの程度縮小すればよいのか
 3Dプリンタで出力した後、実物として成立するか
 提出する STL ファイル名が正しく整理されているか
-
 「設計 → 判定 → 修正 → 再判定」という試行錯誤を支援するための教材アプリです。
 
 
@@ -76,9 +75,7 @@ https://jkawamata.github.io/gachapon-fit/
 Google Chrome
 Microsoft Edge
 Safari
-
-インストールは不要です。
-GitHub Pages 上で公開されたページを開くだけで利用できます。
+インストールは不要です。GitHub Pages 上で公開されたページを開くだけで利用できます。
 
 
 ファイル構成
@@ -87,7 +84,6 @@ GitHub Pages 上で公開されたページを開くだけで利用できます�
 gachapon-fit/
 ├── index.html
 └── README.md
-
 実際の構成は、リポジトリ内のファイルに合わせて調整してください。
 
 
