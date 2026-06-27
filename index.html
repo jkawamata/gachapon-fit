@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>48mmガチャポンFIT　V2.49</title>
+<title>48mmガチャポンFIT　V2.52</title>
 <style>
 :root{
   --bg:#e7ebf4; --panel:#ffffff; --ink:#172033; --muted:#667085;
@@ -421,7 +421,7 @@ body.submit-dialog-open #submitDialogBackdrop{
   position:absolute;
   left:50%;
   top:50%;
-  /* V2.49: 生徒端末で上下が欠けないよう、提出用STL保存ウインドウだけ0.8倍表示 */
+  /* V2.52: 生徒端末で上下が欠けないよう、提出用STL保存ウインドウだけ0.8倍表示 */
   transform:translate(-50%,-50%) scale(0.8);
   transform-origin:center center;
   z-index:71;
@@ -896,7 +896,7 @@ body.layer-screen-open #layerScreen{
 }
 
 
-/* V2.49: 6面表示の3D領域をカード全体に広げる */
+/* V2.52: 6面表示の3D領域をカード全体に広げる */
 #layerGrid:not(.singleLayerMode) .layerCanvasWrap{
   inset:0 !important;
 }
@@ -979,7 +979,7 @@ body.layer-screen-open #layerScreen{
 }
 
 
-/* V2.49: 積層方向選択時の黄色枠 */
+/* V2.52: 積層方向選択時の黄色枠 */
 body.layer-screen-open .layerCard.selected{
   border-color:#f59e0b !important;
   box-shadow:
@@ -1019,7 +1019,7 @@ body.layer-screen-open .layerCard.selected::after{
 }
 
 
-/* V2.49: 現在位置は文字ではなく、赤い太めの矢印グラフィックで表示 */
+/* V2.52: 現在位置は文字ではなく、赤い太めの矢印グラフィックで表示 */
 .flowNowArrow{
   position:relative;
   width:34px;
@@ -1060,7 +1060,7 @@ body.layer-screen-open .layerCard.selected::after{
 }
 
 
-/* V2.49: 積層方向判定画面でも右端にフローチャートを表示 */
+/* V2.52: 積層方向判定画面でも右端にフローチャートを表示 */
 body.layer-screen-open #flowPanel{
   display:block !important;
   z-index:140 !important;
@@ -1080,7 +1080,7 @@ body.layer-screen-open #layerGrid{
 }
 
 
-/* V2.49: 積層方向画面ではフローチャートを右上角へ寄せる */
+/* V2.52: 積層方向画面ではフローチャートを右上角へ寄せる */
 body.layer-screen-open #flowPanel{
   display:block !important;
   z-index:140 !important;
@@ -1102,7 +1102,7 @@ body.layer-screen-open #layerGrid{
 }
 
 
-/* V2.49: 現在位置は赤い点滅丸で表示 */
+/* V2.52: 現在位置は赤い点滅丸で表示 */
 .flowNowArrow{
   position:relative !important;
   width:24px !important;
@@ -1145,7 +1145,7 @@ body.layer-screen-open #layerGrid{
 }
 
 
-/* V2.49: フローチャートを右上端に寄せる */
+/* V2.52: フローチャートを右上端に寄せる */
 #flowPanel{
   top:8px !important;
   right:6px !important;
@@ -1156,7 +1156,7 @@ body.layer-screen-open #flowPanel{
 }
 
 
-/* V2.49: フローチャートの↓を処理ボックスの中央に合わせる */
+/* V2.52: フローチャートの↓を処理ボックスの中央に合わせる */
 #flowPanel .flowArrow{
   width:auto !important;
   margin:2px 0 2px 34px !important; /* 左の赤丸スペース分だけずらす */
@@ -1173,7 +1173,7 @@ body.layer-screen-open #flowPanel{
 }
 
 
-/* V2.49: ボタン押下フィードバックと積層方向計算中表示 */
+/* V2.52: ボタン押下フィードバックと積層方向計算中表示 */
 button.pressedFeedback,
 .flowStep.pressedFeedback{
   background:#dc2626 !important;
@@ -1246,7 +1246,7 @@ button.processingLock,
 }
 
 
-/* V2.49: 提出用STL保存の入力欄は、誤入力防止のため全て縦並び */
+/* V2.52: 提出用STL保存の入力欄は、誤入力防止のため全て縦並び */
 .submitGrid{
   grid-template-columns:1fr !important;
   gap:12px !important;
@@ -1293,6 +1293,81 @@ button.processingLock,
   color:#fff;
 }
 
+
+#appTitleBtn{
+  appearance:none;
+  border:0;
+  background:transparent;
+  color:inherit;
+  font:inherit;
+  font-weight:400;
+  letter-spacing:.04em;
+  padding:0;
+  margin:0;
+  box-shadow:none;
+  cursor:pointer;
+}
+#appTitleBtn:hover{
+  text-decoration:underline;
+  text-underline-offset:4px;
+}
+#appInfoBackdrop{
+  position:absolute;
+  inset:0;
+  z-index:82;
+  display:none;
+  background:rgba(15,23,42,.25);
+}
+body.app-info-open #appInfoBackdrop{
+  display:block;
+}
+#appInfoDialog{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  z-index:83;
+  width:min(720px,90vw);
+  display:none;
+  background:rgba(255,255,255,.98);
+  border:1px solid rgba(148,163,184,.45);
+  border-radius:22px;
+  padding:26px 30px;
+  box-shadow:0 18px 48px rgba(15,23,42,.30);
+  color:#1f2937;
+}
+body.app-info-open #appInfoDialog{
+  display:block;
+}
+#appInfoDialog h2{
+  margin:0 0 16px;
+  font-size:28px;
+  color:#334155;
+  font-weight:600;
+}
+#appInfoText{
+  font-size:20px;
+  line-height:1.75;
+  font-weight:400;
+  letter-spacing:.01em;
+  white-space:pre-line;
+}
+#appInfoSignature{
+  margin-top:18px;
+  text-align:right;
+  font-size:19px;
+  font-weight:400;
+  color:#475569;
+}
+#appInfoCloseBtn{
+  margin-top:22px;
+  display:block;
+  margin-left:auto;
+  font-size:18px;
+  font-weight:400;
+  padding:12px 18px;
+}
+
 </style>
 </head>
 <body>
@@ -1306,7 +1381,7 @@ button.processingLock,
       <button id="settingsBtn" class="light">設定変更</button>
     </div>
     <div class="titleBox">
-      <h1>48mmガチャポンFIT　V2.49</h1>
+      <h1><button id="appTitleBtn" type="button">48mmガチャポンFIT　V2.52</button></h1>
       <div class="sub"></div>
     </div>
     <div class="rightTopGroup">
@@ -1361,6 +1436,17 @@ button.processingLock,
 
   <div id="hud">マウスでガチャ玉の回転・拡大縮小ができます</div>
 
+
+  <div id="appInfoBackdrop"></div>
+  <div id="appInfoDialog" role="dialog" aria-modal="true" aria-labelledby="appInfoTitle">
+    <h2 id="appInfoTitle">48mmガチャポンFITについて</h2>
+    <div id="appInfoText">作成した STL ファイルをドラッグ＆ドロップすると、48mm ガチャカプセルの中に収まるかを自動判定します。入らない場合は、どの程度小さくすればよいかを確認したり、自動縮小して再判定したりできます。３Dプリントする時の出力方向も判定ができるようにしてあります。
+
+また、提出用 STL 保存機能により、学年・クラス・番号・氏名・日時を含む決められたルールに基づくファイル名で STL を保存できます。これにより、提出された STL ファイルの整理や確認がしやすくなります。</div>
+    <div id="appInfoSignature">2026/06　川俣　純</div>
+    <button id="appInfoCloseBtn" class="light" type="button">閉じる</button>
+  </div>
+
   <div id="centerConfirmBackdrop"></div>
   <div id="centerConfirmDialog" role="dialog" aria-modal="true">
     <div id="centerConfirmText">確認</div>
@@ -1404,7 +1490,7 @@ button.processingLock,
 
 
   <div id="layerScreen" aria-label="積層方向判定画面">
-    <div id="layerAppTitle">48mmガチャポンFIT　V2.49</div>
+    <div id="layerAppTitle">48mmガチャポンFIT　V2.52</div>
     <div id="layerHeader">
       <div>
         <div id="layerTitle">積層方向判定</div>
@@ -1735,7 +1821,7 @@ function setResult(kind, main, sub){
   document.getElementById("resultSub").innerHTML=String(sub || "").replace(/\\n/g,"<br>").replace(/\n/g,"<br>");
 
   if(kind==="ok" && String(main||"").includes("入ります")){
-    // V2.49: 薄すぎ・細すぎの判定は、現在の倍率で「入ります」と表示される時に行う。
+    // V2.52: 薄すぎ・細すぎの判定は、現在の倍率で「入ります」と表示される時に行う。
     // 読み込み時点で小さくても、その後に拡大して入る場合があるため、ここで最終確認する。
     if(objectData?.geom && !suppressFragileCheckOnOkDisplay){
       recomputeFragileCheckForDisplayedSTL();
@@ -1780,7 +1866,7 @@ function showScalePrompt(text){
   if(textEl && text) textEl.textContent=text;
   if(prompt) prompt.style.display="block";
 
-  // V2.49: 「STLを自動で拡大しますか？」などの確認中は、
+  // V2.52: 「STLを自動で拡大しますか？」などの確認中は、
   // 目で確認しやすいようにSTLを動かさない。
   stopPromptSpin();
   isJudgingSpin=false;
@@ -2075,7 +2161,7 @@ function analyzeSTLConnectedComponents(geom){
   const largest = components[0]?.triangles || 0;
   const largestRatio = triCount ? largest / triCount : 1;
 
-  // V2.49:
+  // V2.52:
   // これまでは20三角形未満のかたまりを無視していたため、
   // 低ポリゴンの立方体（1個12三角形）が複数に分かれているSTLを見逃していた。
   // 小さなゴミ三角形は除外しつつ、5mm程度の立方体のような独立部品は拾う。
@@ -2763,7 +2849,7 @@ function translationCandidates(step){
 }
 
 function previewJudgingPose(rx, ry, rz, t=null){
-  // V2.49: 主要姿勢を1つずつ表示するとカクカクして見えるため、
+  // V2.52: 主要姿勢を1つずつ表示するとカクカクして見えるため、
   // 判定中は連続回転アニメーションに統一する。
   // この関数は互換性のため残すが、表示姿勢は強制変更しない。
   if(!objectMesh) return;
@@ -3725,7 +3811,7 @@ async function judge(){
   let angleStep=Number(document.getElementById("angleStep").value);
   let tStep=Number(document.getElementById("translationStep").value);
   let maxN=Number(document.getElementById("sampleCount").value);
-  // V2.49: 回転演出時間の設定は廃止。
+  // V2.52: 回転演出時間の設定は廃止。
   // アニメーションは実際の判定処理中だけ動かす。
   const timeLimit=Number(document.getElementById("timeLimit").value)||10000;
   const autoLight=document.getElementById("autoLight").value==="on";
@@ -3770,7 +3856,7 @@ async function judge(){
   bestPose=null;
 
   const start=performance.now();
-  // V2.49: 見せるためだけの待ち時間は使わない。
+  // V2.52: 見せるためだけの待ち時間は使わない。
   // アニメーションは実際の判定処理中だけ表示する。
   startSpin(timeLimit, 0);
 
@@ -3786,7 +3872,7 @@ async function judge(){
       for(const rz of angles){
         tried++;
 
-        // V2.49: 見せるためだけの待機はしない。
+        // V2.52: 見せるためだけの待機はしない。
         // UI更新のために時々だけ処理を譲る。
         if(tried % 8 === 0){
           await sleep(0);
@@ -3950,7 +4036,7 @@ async function judge(){
     }
   }
 
-  // V2.49: 入らない場合も、演出のためだけには待たない。
+  // V2.52: 入らない場合も、演出のためだけには待たない。
   // 判定が終わったらすぐに赤表示へ移る。
   await stopSpin();
 
@@ -4183,6 +4269,29 @@ let layerViewState = null;
 
 let isLayerComputing = false;
 
+
+function openAppInfoDialog(){
+  document.body.classList.add("app-info-open");
+}
+function closeAppInfoDialog(){
+  document.body.classList.remove("app-info-open");
+}
+function setupAppInfoDialog(){
+  document.getElementById("appTitleBtn")?.addEventListener("click", openAppInfoDialog);
+  document.getElementById("appInfoCloseBtn")?.addEventListener("click", closeAppInfoDialog);
+  document.getElementById("appInfoBackdrop")?.addEventListener("click", closeAppInfoDialog);
+  window.addEventListener("keydown", (e)=>{
+    if(e.key === "Escape" && document.body.classList.contains("app-info-open")){
+      closeAppInfoDialog();
+    }
+  });
+}
+if(document.readyState === "loading"){
+  document.addEventListener("DOMContentLoaded", setupAppInfoDialog);
+}else{
+  setupAppInfoDialog();
+}
+
 function showButtonPressedFeedback(btn, hold=false){
   if(!btn) return;
   btn.classList.add("pressedFeedback");
@@ -4227,7 +4336,7 @@ function makeLayerGeometry(orientationIndex){
   const ori = LAYER_ORIENTATIONS[orientationIndex];
   const geom = objectData.geom.clone();
 
-  // V2.49: 積層方向判定では立体の実寸は変えない。
+  // V2.52: 積層方向判定では立体の実寸は変えない。
   // 見やすさのための拡大縮小はカメラ側だけで行う。
   geom.applyMatrix4(layerOrientationMatrix(ori));
   geom.computeBoundingBox();
@@ -4700,7 +4809,7 @@ function createLayerScene(container, evaluation, index){
   const isSixView = !!document.getElementById("layerGrid") && !document.getElementById("layerGrid").classList.contains("singleLayerMode");
   // 6面表示では、各方向のモデル全体が必ずカード内に収まるよう、
   // STLの最大寸法から表示枠を決める。ガチャポン判定時の倍率は使わない。
-  // V2.49: 6画面表示では、はみ出し防止のため表示枠を少し大きめに取る。
+  // V2.52: 6画面表示では、はみ出し防止のため表示枠を少し大きめに取る。
   // これはカメラ表示だけの調整で、STLの実寸は変えない。
   const viewBaseDim = isSixView ? Math.max(48, modelDim * 1.55) : Math.max(105, modelDim);
   const maxDim = viewBaseDim;
